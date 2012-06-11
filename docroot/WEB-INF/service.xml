@@ -3,39 +3,36 @@
 <service-builder package-path="com.rcs.service">
 	<author>RCS - Pablo Rendon</author>
     <namespace>GoogleAnalytics</namespace>
-<!--     <entity name="Book" local-service="true" remote-service="true"> -->
+    <entity name="Configuration" local-service="true" remote-service="false">
 
-<!--         PK fields -->
+		<!-- PK fields -->
+        <column name="configurationId" type="long" primary="true" />
 
-<!--         <column name="bookId" type="long" primary="true" /> -->
+		<!-- Group instance -->
+        <column name="groupId" type="long" />
+		<column name="companyId" type="long" />
+		
+		<!-- Audit fields -->        
+        <column name="userId" type="long" />
+        <column name="userName" type="String" />
+        <column name="createDate" type="Date" />
+        <column name="modifiedDate" type="Date" />
 
-<!--         Group instance -->
-
-<!--         <column name="groupId" type="long" /> -->
-
-<!--         Audit fields -->
-
-<!--         <column name="companyId" type="long" /> -->
-<!--         <column name="userId" type="long" /> -->
-<!--         <column name="userName" type="String" /> -->
-<!--         <column name="createDate" type="Date" /> -->
-<!--         <column name="modifiedDate" type="Date" /> -->
-
-<!--         Other fields -->
-
-<!--         <column name="title" type="String" /> -->
+		<!-- Other fields -->
+        <column name="propertyname" type="String" />
+        <column name="propertyvalue" type="String" />
         
-<!-- 		<!-- Order --> -->
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="configurationId" />
+		</order>
 
-<!-- 		<order by="asc"> -->
-<!-- 			<order-column name="bookId" /> -->
-<!-- 		</order> -->
-
-<!-- 		<!-- Finder methods --> -->
-
-<!-- 		<finder name="BY_Title" return-type="Collection"> -->
-<!-- 			<finder-column name="title" /> -->
-<!-- 		</finder> -->
+		<!-- Finder methods -->
+		<finder name="propertyname" return-type="Collection">
+			<finder-column name="propertyname" />
+			<finder-column name="groupId" />
+			<finder-column name="companyId" />
+		</finder>
         
-<!--     </entity> -->
+    </entity>
 </service-builder>

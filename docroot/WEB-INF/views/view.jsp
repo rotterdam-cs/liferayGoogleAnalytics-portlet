@@ -73,18 +73,18 @@ var initprev = function(initPrevData) {
 Liferay.on('portletReady', function(event) {            
 	if('_' + event.portletId + '_' == '<portlet:namespace/>') {
 					
-// 		jQuery('#pastMonth').on('click', function() {
-// 			queryCoreReportingApiPrev();			
-// 		});	
+		jQuery('#pastMonth').on('click', function() {
+			queryCoreReportingApiPrev();			
+		});	
 		
-// 		jQuery('#flot').on('mouseleave', function() {
-// 			tooltip = jQuery('#tooltip');
-// 			if (tooltip) {
-// 			    tooltip.remove();
-// 			}
-// 		});
+		jQuery('#flot').on('mouseleave', function() {
+			tooltip = jQuery('#tooltip');
+			if (tooltip) {
+			    tooltip.remove();
+			}
+		});
 	}
 });
 </script>
 
-<div>test Lifreay Google Analytics</div>
+<div>Lifreay Google Analytics</div>

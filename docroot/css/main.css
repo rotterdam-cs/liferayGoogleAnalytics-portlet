@@ -1,0 +1,14 @@
+.liferayGoogleAnalytics-portlet #mod_analytics {
+	background-color: #FFFFFF;
+	padding: 5px;
+	border-width: 1px 1px 1px 1px;
+	border-color: #b5b5b5;
+	border-style: solid solid solid solid;
+	padding-top: 1px;
+	margin-right: 5px;	
+}
+.labelanalytics a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #0077cc;
+}
