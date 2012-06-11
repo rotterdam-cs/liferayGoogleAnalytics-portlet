@@ -1,0 +1,183 @@
+#mod_analytics {
+  margin: 0 5px; }
+
+#legend {
+  margin-left: 20px;
+  margin-top: 5px;
+  float: right;
+  font-size: 14px;
+  color: #000000; }
+
+#analyticsControls {
+  float: left;
+  text-align: right;
+  margin-top: 7px;
+  margin-right: 8px;
+  font-size: 10px;
+  padding-left: 25px; }
+
+.clr {
+  clear: both; }
+
+td.legendLabel {
+  padding-right: 10px; }
+
+.report_section {
+  padding-top: 15px; }
+
+.report_section .section {
+  float: left;
+  width: 49%; }
+
+.statistic {
+  margin: 0 0 1em; }
+
+.scorecard .statistic {
+  margin: 0; }
+
+.statistic h3 {
+  font-weight: normal;
+  font-size: 170%;
+  margin: 0; }
+
+.statistic .label, .statistic p {
+  margin: 0; }
+
+.statistic .not_configured p {
+  margin: 0 0 .5em 0; }
+
+.statistic .primary_value {
+  font-weight: bold;
+  font-size: 160%;
+  margin: 0; }
+
+.statistic .primary_value .item_name {
+  font-size: 67%;
+  font-weight: normal;
+  color: #666; }
+
+.statistic .primary_value .item_value {
+  font-size: 70%; }
+
+.statistic .primary_value .label a {
+  font-size: 70%; }
+
+.statistic .comparison_value, .statistic .positive_comparison, .statistic .negative_comparison, .statistic .neutral_comparison {
+  font-weight: bold;
+  white-space: nowrap; }
+
+.statistic .comparison_value.segments {
+  color: black;
+  font-size: 115%; }
+
+.statistic .date_comparison {
+  margin: 0;
+  font-size: 100%;
+  color: #666; }
+
+.statistic .date_comparison.segment {
+  margin-bottom: .5em;
+  font-size: 107%; }
+
+.statistic .date_comparison.segment .primary_value, .statistic .date_comparison.segment .comparison_value {
+  font-size: 125%;
+  color: black; }
+
+.statistic .date_comparison.segment .label {
+  color: black;
+  font-weight: bold;
+  font-size: 125%; }
+
+.statistic .message {
+  padding-top: 5px;
+  color: #666666; }
+
+.sparkline div .statistic h3 {
+  font-size: 110%; }
+
+.scorecard .statistic h3 {
+  font-weight: normal;
+  font-size: 110%;
+  margin: 0;
+  padding: 0 15px 0 0; }
+
+.sparkline div .statistic h3 .label {
+  font-weight: bold; }
+
+.scorecard.expanded .sparkline .statistic h3 .label, .scorecard.dashboard .sparkline .statistic h3 .label {
+  font-weight: bold; }
+
+.navigation_summary .statistic h3 {
+  font-size: 110%; }
+
+.sparkline .statistic {
+  margin-left: 90px;
+  padding: .3em 0 0 0; }
+
+.sparkline {
+  margin: 0 0 1em; }
+
+.sparkline .visualization {
+  float: left;
+  padding: .1em 0 0 0;
+  width: 90px; }
+
+.sparkline .statistic {
+  margin-left: 90px;
+  padding: .3em 0 0 0; }
+
+.visualization .f_sparkline_inner {
+  padding: 5px 2px 2px 2px; }
+
+.visualization .f_sparkline_outer.hover {
+  border-width: 0 1px 1px 0;
+  border-color: #b5b5b5;
+  border-style: none solid solid none;
+  padding-top: 1px;
+  margin-right: 5px;
+  float: left;
+  position: relative;
+  cursor: pointer; }
+
+.visualization .f_sparkline_outer.hover .f_sparkline_inner.hover {
+  border-width: 1px;
+  border-color: #e6e6e6;
+  border-style: solid;
+  margin-left: -1px;
+  margin-top: -2px;
+  margin-right: 0;
+  float: left;
+  position: relative; }
+
+.positive_comparison {
+  color: #078C00;
+  padding-left: 3px; }
+
+.negative_comparison {
+  color: #900;
+  padding-left: 3px; }
+
+.spinner {
+  position: absolute;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90);
+  z-index: 999;
+  background: #fff; }
+
+.spinner-msg {
+  text-align: center;
+  font-weight: bold; }
+
+.spinner-img {
+  background: url(spinner.gif) no-repeat;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto; }
+
+.datecurrent {
+  color: #0077CC; }
+
+.datepast {
+  color: #86be2b; }
+

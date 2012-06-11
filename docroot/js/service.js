@@ -1,0 +1,1 @@
+Liferay.Service.register("Liferay.Service.PrjMaxLibrary", "com.rcs.service.service", "testporltet-portlet");
