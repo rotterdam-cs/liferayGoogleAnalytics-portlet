@@ -39,7 +39,7 @@
 		<footer-portlet-javascript>/js/google_analytics_api_v3/analyticsCharts.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/google_analytics_api_v3/chart_Example.js</footer-portlet-javascript>
 <!-- 		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=handleClientLoad</footer-portlet-javascript> -->
-		<footer-portlet-javascript>https://apis.google.com/js/client.js</footer-portlet-javascript>
+		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=retreiveGoogleAnalyticsAccountInfo</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
 		<css-class-wrapper>liferayGoogleAnalytics-portlet</css-class-wrapper>
 	</portlet>

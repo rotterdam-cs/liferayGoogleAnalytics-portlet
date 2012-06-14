@@ -10,6 +10,7 @@ public class ConfigurationDTO implements Serializable {
 	private String account_id;
 	private String property_id;
 	private String profile_id;
+	private String token;
 	
 	public ConfigurationDTO() {		
 	}
@@ -52,6 +53,14 @@ public class ConfigurationDTO implements Serializable {
 
 	public void setProfile_id(String profile_id) {
 		this.profile_id = profile_id;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 	
 }

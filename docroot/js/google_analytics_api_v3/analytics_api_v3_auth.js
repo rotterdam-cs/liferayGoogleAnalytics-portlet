@@ -1,116 +1,74 @@
 //************************************************
 //@author Prj.M@x <pablo.rendon@rotterdam-cs.com>
-//https://developers.google.com/accounts/docs/OAuth2
 //************************************************
-
-//local//var clientId = '374594455776-tf1hj2c73p0tudmbah0fgh2dugqla2jk.apps.googleusercontent.com';
-//remote//var clientId = '374594455776-njcs1l24c7aa7ru0o22l2rpi17a9o5vs.apps.googleusercontent.com';
-//var apiKey = 'AIzaSyBf0hC5x4xXiwuRQTSt0PxVvfNQ3WRSxVI';
 
 var scopes = 'https://www.googleapis.com/auth/analytics.readonly';
 
-// This function is called after the Client Library has finished loading
-function handleClientLoad() {
-	// 1. Set the API Key
-	gapi.client.setApiKey(apiKey);
-
-	// 2. Call the function that checks if the user is Authenticated. This is
-	// defined in the next section
-	window.setTimeout(checkAuth, 1);
+//Get authorization with the stored Token
+function handleClientLoadTokenConfiguration(storedtoken) {
+	var token = {
+		 access_token : storedtoken
+		,expires_in: "3600"
+		,state: ""
+		,token_type: "Bearer"
+	};
+	gapi.auth.setToken(token);
+	gapi.client.load('analytics', 'v3', makeApiCallConfiguration);
 }
 
-function checkAuth() {
-	// Call the Google Accounts Service to determine the current user's auth
-	// status.
-	// Pass the response to the handleAuthResult callback function
-	gapi.auth.authorize({
-		client_id : clientId,
-		scope : scopes,
-		immediate : true
-	}, handleAuthResult);
-}
-
-function handleAuthResult(authResult) {
-	if (authResult) {
-		// The user has authorized access
-		// Load the Analytics Client. This function is defined in the next
-		// section.
-		loadAnalyticsClient();
-	} else {
-		// User has not Authenticated and Authorized
-		handleUnAuthorized();
-	}
-}
-
-// Authorized user
-function handleAuthorized() {
-	var authorizeButton = document.getElementById('authorize-button');
-	var makeApiCallButton = document.getElementById('make-api-call-button');
-
-	// Show the 'Get Visits' button and hide the 'Authorize' button
-	makeApiCallButton.style.visibility = '';
-	authorizeButton.style.visibility = 'hidden';
-
-	// When the 'Get Visits' button is clicked, call the makeAapiCall function
-	makeApiCallButton.onclick = makeApiCall;
-}
-
-// Unauthorized user
-function handleUnAuthorized() {
-	var authorizeButton = document.getElementById('authorize-button');
-	var makeApiCallButton = document.getElementById('make-api-call-button');
-
-	// Show the 'Authorize Button' and hide the 'Get Visits' button
-	makeApiCallButton.style.visibility = 'hidden';
-	authorizeButton.style.visibility = '';
-
-	// When the 'Authorize' button is clicked, call the handleAuthClick function
-	authorizeButton.onclick = handleAuthClick;
-}
-
-function handleAuthClick(event) {
-	gapi.auth.authorize({
-		client_id : clientId,
-		scope : scopes,
-		immediate : false
-	}, handleAuthResult);
-	return false;
-}
-
-function loadAnalyticsClient() {
-	// Load the Analytics client and set handleAuthorized as the callback
-	// function
-	gapi.client.load('analytics', 'v3', handleAuthorized);
-}
-
-
-
-
-function handleClientLoadConfiguration(apiKey, clientId) {	
+//Get authorization the first time
+//Step 1
+function handleClientLoadConfiguration(apiKey, clientId) {
 	gapi.client.setApiKey(apiKey);
 	window.setTimeout("checkAuthConfiguration('" + clientId + "')", 1);
 }
-function checkAuthConfiguration(clientId) {
+var isTimeOut = false;
+function checkTimeOut() {
+	if (isTimeOut) {
+		var error = getLocallizedKey("com.rcs.googleanalytics.error.timeout.wrong.parameters");
+		console.log(error);
+		showError(error);
+		jQuery("#"+namespace+"detailed-configuration").unmask();
+	}
+}
+//Step 2
+// Call the Google Accounts Service to determine the current user's auth status
+// Pass the response to the handleAuthResultConfiguration callback function
+function checkAuthConfiguration(clientId) {	
+	isTimeOut = true;	
+	window.setTimeout(checkTimeOut, 10000);	
 	gapi.auth.authorize({
 		client_id : clientId,
 		scope : scopes,
 		immediate : true
-	}, handleAuthResultConfiguration);
+	},handleAuthResultConfiguration);
 }
+//Step 3
+//Handle the authorization answer
 function handleAuthResultConfiguration(authResult) {
-	if (authResult) {		
+	isTimeOut = false;
+	if (authResult) {	
 		loadAnalyticsClientConfiguration();
 	} else {
 		handleUnAuthorizedConfiguration();
 	}
 }
+//Step 4
+//If the authorization was OK store the Token to avoid the process next time
+//Load the Analytics client and set handleAuthorized as the callback function
 function loadAnalyticsClientConfiguration() {
+	var receivedToken = gapi.auth.getToken();
+	updateToken(receivedToken.access_token);
 	gapi.client.load('analytics', 'v3', handleAuthorizedConfiguration);
 }
+//Step 5
+//Call the api configuration
 function handleAuthorizedConfiguration() {
 	makeApiCallConfiguration();
 }
+//Step 6
+//If the authorization was not OK it shows an error
 function handleUnAuthorizedConfiguration() {
-	showError("@@Bad Parameters");
-	//DO SOMETHING TO SHOW BAD PARAMETERS
+	jQuery("#"+namespace+"detailed-configuration").unmask();
+	showError(getLocallizedKey("com.rcs.googleanalytics.error.unauthorized.access"));
 }

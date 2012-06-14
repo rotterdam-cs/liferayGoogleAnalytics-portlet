@@ -13,6 +13,7 @@
 <fmt:setBundle basename="Language"/>
 <portlet:defineObjects />
 <portlet:resourceURL var="adminSectionsURL" id="adminSections" />
+<portlet:resourceURL var="getLocallizedKeyURL" id="getLocallizedKey" />
 
 <%@include file="header.jsp" %>
 
@@ -27,11 +28,29 @@
         </div>
     </div>
 </div>
-     
+
 <script type="text/javascript">
+	<%--//Retreive Google Analytics Account Information--%>
+	function retreiveGoogleAnalyticsAccountInfo(apiKey, clientId) {
+		<%--//Initial or manual autentication--%>
+		if (apiKey != null && apiKey != "" && clientId != null && clientId != "") {
+			jQuery("#<portlet:namespace/>detailed-configuration").mask('Retrieving Google Analytics account information...');
+        	handleClientLoadConfiguration(apiKey, clientId);        
+		}
+		<%--//Automatic autentication based on the token if it exists--%>
+		<c:if test="${configuration.token != ''}" >
+			else {
+				jQuery("#<portlet:namespace/>detailed-configuration").mask('Retrieving Google Analytics account information...');
+				setTimeout("handleClientLoadTokenConfiguration('${configuration.token}')", 1000);
+			}
+		</c:if>
+	}
+	
     Liferay.on('portletReady', function(event) {            
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
-    		namespace = '<portlet:namespace/>';
+        	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
+         	<c:if test="${errors != ''}" >messages = ${errors};</c:if>
+        	namespace = '<portlet:namespace/>';
     		current_account_id = 0;
         	current_property_id = 0;
         	current_profile_id = 0;
@@ -43,7 +62,7 @@
     		var dataType;
     		var currentKPI;
     		var plot;
-    		var data;
+    		var data;  
             <%--//Load the first section (Account)--%>
             jQuery(function () {
                 jQuery('a[data-toggle="tab"]:first').tab('show');

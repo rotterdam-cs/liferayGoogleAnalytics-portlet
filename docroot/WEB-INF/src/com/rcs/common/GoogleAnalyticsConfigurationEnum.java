@@ -6,7 +6,8 @@ public enum GoogleAnalyticsConfigurationEnum {
 	APIKEY("api_key"),
 	ACCOUNT_ID("account_id"),
 	PROPERTY_ID("property_id"),
-	PROFILE_ID("profile_id");
+	PROFILE_ID("profile_id"),
+	TOKEN("token");
 	
 	private String key;
 
