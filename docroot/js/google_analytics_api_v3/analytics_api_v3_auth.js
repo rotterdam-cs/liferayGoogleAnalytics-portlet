@@ -3,9 +3,10 @@
 //https://developers.google.com/accounts/docs/OAuth2
 //************************************************
 
-var clientId = '374594455776-tf1hj2c73p0tudmbah0fgh2dugqla2jk.apps.googleusercontent.com';
-//var clientId = '374594455776-njcs1l24c7aa7ru0o22l2rpi17a9o5vs.apps.googleusercontent.com';
-var apiKey = 'AIzaSyBf0hC5x4xXiwuRQTSt0PxVvfNQ3WRSxVI';
+//local//var clientId = '374594455776-tf1hj2c73p0tudmbah0fgh2dugqla2jk.apps.googleusercontent.com';
+//remote//var clientId = '374594455776-njcs1l24c7aa7ru0o22l2rpi17a9o5vs.apps.googleusercontent.com';
+//var apiKey = 'AIzaSyBf0hC5x4xXiwuRQTSt0PxVvfNQ3WRSxVI';
+
 var scopes = 'https://www.googleapis.com/auth/analytics.readonly';
 
 // This function is called after the Client Library has finished loading
@@ -80,4 +81,36 @@ function loadAnalyticsClient() {
 	// Load the Analytics client and set handleAuthorized as the callback
 	// function
 	gapi.client.load('analytics', 'v3', handleAuthorized);
+}
+
+
+
+
+function handleClientLoadConfiguration(apiKey, clientId) {	
+	gapi.client.setApiKey(apiKey);
+	window.setTimeout("checkAuthConfiguration('" + clientId + "')", 1);
+}
+function checkAuthConfiguration(clientId) {
+	gapi.auth.authorize({
+		client_id : clientId,
+		scope : scopes,
+		immediate : true
+	}, handleAuthResultConfiguration);
+}
+function handleAuthResultConfiguration(authResult) {
+	if (authResult) {		
+		loadAnalyticsClientConfiguration();
+	} else {
+		handleUnAuthorizedConfiguration();
+	}
+}
+function loadAnalyticsClientConfiguration() {
+	gapi.client.load('analytics', 'v3', handleAuthorizedConfiguration);
+}
+function handleAuthorizedConfiguration() {
+	makeApiCallConfiguration();
+}
+function handleUnAuthorizedConfiguration() {
+	showError("@@Bad Parameters");
+	//DO SOMETHING TO SHOW BAD PARAMETERS
 }

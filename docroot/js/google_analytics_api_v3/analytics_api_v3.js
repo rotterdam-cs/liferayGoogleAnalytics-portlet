@@ -12,9 +12,15 @@
 
 function makeApiCall() {
 	jQuery("#mod_analytics").removeClass("hidden");
-	jQuery("#mod_analytics").mask('Loading...');
+	jQuery("#mod_analytics").mask('Loading...');	
 	queryAccounts();
 }
+function makeApiCallConfiguration() {
+	jQuery("#"+namespace+"detailed-configuration").mask('Loading...');
+	queryAccountsConfiguration();
+}
+
+
 
 function queryAccounts() {
 	console.log('Querying Accounts.');
@@ -23,6 +29,11 @@ function queryAccounts() {
 	gapi.client.analytics.management.accounts.list().execute(handleAccounts);
 	console.log('Querying Accounts1.');
 }
+function queryAccountsConfiguration() {	
+	gapi.client.analytics.management.accounts.list().execute(handleAccountsConfiguration);
+}
+
+
 
 function handleAccounts(results) {
 	console.log('handleAccounts:' + results);
@@ -47,6 +58,31 @@ function handleAccounts(results) {
 		console.log('There was an error querying accounts: ' + results.message);
 	}
 }
+function handleAccountsConfiguration(results) {
+	if (!results.code) {
+		if (results && results.items && results.items.length) {
+			accountsconfiguration = results;		
+			for	(var i=0;i<results.items.length;i++) {
+				setSelectOption(namespace+"account_id", results.items[i].id, results.items[i].name);
+			}
+			var firstAccountId = results.items[0].id;			
+			if (results.items.length == 1 && (firstAccountId == current_account_id || current_account_id == 0)) {
+				jQuery("#"+namespace+"account_id").val(firstAccountId);
+				queryWebpropertiesConfiguration(firstAccountId);				
+			} else {
+				jQuery("#"+namespace+"detailed-configuration").unmask();
+			}
+		} else {
+			console.log('No accounts found for this user.');
+			showError('@@No accounts found for this user.');
+		}
+	} else {
+		console.log('There was an error querying accounts: ' + results.message);
+		showError('@@There was an error querying accounts: ' + results.message);
+	}
+}
+
+
 
 function queryWebproperties(accountId) {
 	console.log('Querying Webproperties.');
@@ -56,6 +92,12 @@ function queryWebproperties(accountId) {
 		'accountId' : accountId
 	}).execute(handleWebproperties);
 }
+function queryWebpropertiesConfiguration(accountId) {
+	gapi.client.analytics.management.webproperties.list({
+		'accountId' : accountId
+	}).execute(handleWebpropertiesConfiguration);
+}
+
 
 var lalala;
 
@@ -87,6 +129,30 @@ function handleWebproperties(results) {
 				+ results.message);
 	}
 }
+function handleWebpropertiesConfiguration(results) {
+	if (!results.code) {
+		if (results && results.items && results.items.length) {		
+			for	(var i=0;i<results.items.length;i++) {				
+				setSelectOption(namespace+"property_id", results.items[i].id, results.items[i].name);
+			}	
+			var firstAccountId = results.items[0].accountId;
+			var firstWebpropertyId = results.items[0].id;
+			if (results.items.length == 1 && (firstWebpropertyId == current_property_id || current_account_id == 0) ) {
+				jQuery("#"+namespace+"property_id").val(firstWebpropertyId);
+				queryProfilesConfiguration(firstAccountId, firstWebpropertyId);
+			} else {
+				jQuery("#"+namespace+"detailed-configuration").unmask();
+			}
+		} else {
+			console.log('No webproperties found for this user.');
+			showError('@@No webproperties found for this user ');
+		}
+	} else {
+		console.log('There was an error querying webproperties: ' + results.message);
+		showError('@@There was an error querying webproperties: ' + results.message);
+	}
+}
+
 
 function queryProfiles(accountId, webpropertyId) {
 	console.log('Querying Profiles.');
@@ -97,6 +163,12 @@ function queryProfiles(accountId, webpropertyId) {
 		'accountId' : accountId,
 		'webPropertyId' : webpropertyId
 	}).execute(handleProfiles);
+}
+function queryProfilesConfiguration(accountId, webpropertyId) {
+	gapi.client.analytics.management.profiles.list({
+		'accountId' : accountId,
+		'webPropertyId' : webpropertyId
+	}).execute(handleProfilesConfiguration);
 }
 
 function handleProfiles(results) {
@@ -121,7 +193,24 @@ function handleProfiles(results) {
 		console.log('There was an error querying profiles: ' + results.message);
 	}
 }
-
+function handleProfilesConfiguration(results) {
+	if (!results.code) {
+		if (results && results.items && results.items.length) {			
+			for	(var i=0;i<results.items.length;i++) {
+				setSelectOption(namespace+"profile_id", results.items[i].id, results.items[i].name);
+			}	
+			var firstProfileId = results.items[0].id;
+			if (results.items.length == 1 && (firstProfileId == current_profile_id || current_account_id == 0) ) {				
+				jQuery("#"+namespace+"profile_id").val(firstProfileId);
+			}
+			jQuery("#"+namespace+"detailed-configuration").unmask();
+		} else {
+			console.log('No profiles found for this user.');
+		}
+	} else {
+		console.log('There was an error querying profiles: ' + results.message);
+	}
+}
 
 function queryCoreReportingApi(profileId) {
 	selProfileId = profileId;
