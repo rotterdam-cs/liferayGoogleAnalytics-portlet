@@ -44,6 +44,7 @@
     </p>
     <p>
         <button type="button" class="btn" id="<portlet:namespace/>save-configuration" <c:if test="${configuration.client_id != '' && configuration.api_key != ''}" >disabled="true"</c:if> ><fmt:message key="com.rcs.general.save"/></button>
+        <button type="button" class="btn btn-primary" id="<portlet:namespace/>authorize-button" style="display: none;"><fmt:message key="com.rcs.general.authorize"/></button>
     </p>
 </form>
 
@@ -196,6 +197,9 @@
                 jQuery('#<portlet:namespace/>detailedconfigurationform').ajaxSubmit(detailedOptionsSave);
             }
         });        
+        
+        <%--//Authorization Form Button Listener --%>
+        jQuery("#<portlet:namespace/>authorize-button").click(handleAuthClick); 
         
         <%--//Listeners for Combo Boxes --%>
         jQuery("#<portlet:namespace/>account_id").on("change", function() {

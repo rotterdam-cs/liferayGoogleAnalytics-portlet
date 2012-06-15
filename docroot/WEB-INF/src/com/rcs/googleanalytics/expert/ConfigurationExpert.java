@@ -12,10 +12,10 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.persistence.UserUtil;
-import com.rcs.common.GoogleAnalyticsConfigurationEnum;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ServiceActionResult;
 import com.rcs.googleanalytics.dto.ConfigurationDTO;
+import com.rcs.googleanalytics.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.service.model.Configuration;
 import com.rcs.service.service.ConfigurationLocalServiceUtil;
 

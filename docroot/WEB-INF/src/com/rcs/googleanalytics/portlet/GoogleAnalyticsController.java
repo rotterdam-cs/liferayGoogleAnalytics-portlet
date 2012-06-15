@@ -27,13 +27,14 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.rcs.common.GoogleAnalyticsConfigurationEnum;
 import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
 import com.rcs.common.ServiceActionResult;
 import com.rcs.googleanalytics.dto.ConfigurationDTO;
-import com.rcs.googleanalytics.dto.ErrorsDTO;
+import com.rcs.googleanalytics.dto.MessagesDTO;
+import com.rcs.googleanalytics.enums.GoogleAnalyticsConfigurationEnum;
+import com.rcs.googleanalytics.enums.MessagesEnum;
 import com.rcs.googleanalytics.expert.ConfigurationExpert;
 import com.rcs.googleanalytics.expert.UtilsExpert;
 import com.rcs.service.model.Configuration;
@@ -63,18 +64,13 @@ public class GoogleAnalyticsController {
 	@RenderMapping
 	public ModelAndView resolveView(PortletRequest request, PortletResponse response) throws PortalException, SystemException {
 		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
+		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));
 		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);
 		ConfigurationDTO configurationDTO = configurationExpert.getConfiguration(pII);
 		modelAttrs.put("configuration", configurationDTO);
 		
-		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));	
-		ErrorsDTO errorsDTO = new ErrorsDTO();
-		errorsDTO.addError("com.rcs.general.error.processing.data", locale);
-		errorsDTO.addError("com.rcs.googleanalytics.error.unauthorized.access", locale);
-		Gson gson = new Gson();
-	    String errorsJson = gson.toJson(errorsDTO);
-	    modelAttrs.put("errors", errorsJson);   
-        
+	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
+	    modelAttrs.put("messages", messagesJson);        
         
 		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}

@@ -49,7 +49,7 @@
     Liferay.on('portletReady', function(event) {            
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
-         	<c:if test="${errors != ''}" >messages = ${errors};</c:if>
+         	<c:if test="${errors != ''}" >messages = ${messages};</c:if>
         	namespace = '<portlet:namespace/>';
     		current_account_id = 0;
         	current_property_id = 0;

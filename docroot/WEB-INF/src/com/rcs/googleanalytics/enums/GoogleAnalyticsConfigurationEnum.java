@@ -1,4 +1,4 @@
-package com.rcs.common;
+package com.rcs.googleanalytics.enums;
 
 public enum GoogleAnalyticsConfigurationEnum {
 	

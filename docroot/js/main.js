@@ -12,20 +12,28 @@ function setSelectOption(selectId, val, text) {
         jQuery('<option class="added"></option>').val(val).html(text)
     );
 }
-function showError(message){
-	jQuery("#" + namespace + "alert-content").html(message);
+function showError(message){	
+	if (jQuery("#" + namespace + "alert-content").is(":visible")) {
+		jQuery("#" + namespace + "alert-content").append("<br /><br />" + message);
+	} else {
+		jQuery("#" + namespace + "alert-content").html(message);
+	}
     jQuery(".alert-success").hide();
     jQuery(".alert-error").fadeIn();
 }
 function showInfo(message){
 	jQuery(".alert-error").hide();
-    jQuery("#" + namespace + "info-content").html(message);
+	if (jQuery("#" + namespace + "info-content").is(":visible")) {
+		jQuery("#" + namespace + "info-content").append("<br /><br />" + message);
+	} else {
+		jQuery("#" + namespace + "info-content").html(message);
+	}
     jQuery(".alert-success").fadeIn();
 }
 function getLocallizedKey(fkey) {
 	var message=defaultErrorMessage;
 	try {
-		jQuery.each(messages.errors, function(key, value) {
+		jQuery.each(messages.messages, function(key, value) {
 			if (value.key == fkey) {
 				message = value.value;
 			}			
