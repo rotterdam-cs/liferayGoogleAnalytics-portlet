@@ -29,6 +29,21 @@
     </div>
 </div>
 
+<c:if test="${authURL != '' && authURL != null}" ><a href="${authURL}">Authorize -> ${authURL}</a></c:if>
+
+<c:if test="${googleAnalyticsAccounts != null}" >
+	<c:forEach items="${googleAnalyticsAccounts.accounts}" var="row" varStatus="rowCounter">  
+		Account ${row.value} - ${row.html}<br />
+		<c:forEach items="${row.webProperties}" var="row2" varStatus="rowCounter2">  
+			--------WebProperties ${row2.value} - ${row2.html}<br />
+			<c:forEach items="${row2.profiles}" var="row3" varStatus="rowCounter3">  
+				-------------------Profiles ${row3.value} - ${row3.html}<br />
+			</c:forEach>			
+		</c:forEach>		
+	</c:forEach>
+</c:if>
+
+
 <script type="text/javascript">
 	<%--//Retreive Google Analytics Account Information--%>
 	function retreiveGoogleAnalyticsAccountInfo(apiKey, clientId) {
@@ -41,7 +56,7 @@
 		<c:if test="${configuration.token != ''}" >
 			else {
 				jQuery("#<portlet:namespace/>detailed-configuration").mask('Retrieving Google Analytics account information...');
-				setTimeout("handleClientLoadTokenConfiguration('${configuration.token}')", 1000);
+				//setTimeout("handleClientLoadTokenConfiguration('${configuration.token}')", 1000);
 			}
 		</c:if>
 	}

@@ -12,6 +12,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,22 +21,25 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import com.google.gson.Gson;
+import com.google.api.client.auth.oauth2.Credential;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
 import com.rcs.common.ServiceActionResult;
 import com.rcs.googleanalytics.dto.ConfigurationDTO;
-import com.rcs.googleanalytics.dto.MessagesDTO;
+import com.rcs.googleanalytics.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.googleanalytics.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.googleanalytics.enums.MessagesEnum;
 import com.rcs.googleanalytics.expert.ConfigurationExpert;
+import com.rcs.googleanalytics.expert.GoogleAnalyticsDataExpert;
+import com.rcs.googleanalytics.expert.GoogleTokenExpert;
 import com.rcs.googleanalytics.expert.UtilsExpert;
 import com.rcs.service.model.Configuration;
 
@@ -51,7 +55,13 @@ public class GoogleAnalyticsController {
     private ConfigurationExpert configurationExpert;
 	
 	@Autowired
-    private UtilsExpert utilsExpert;	
+    private UtilsExpert utilsExpert;
+	
+	@Autowired
+    private GoogleTokenExpert googleTokenExpert;
+	
+	@Autowired
+	private GoogleAnalyticsDataExpert googleAnalyticsDataExpert;
 	
 	/**
 	 * 
@@ -65,13 +75,36 @@ public class GoogleAnalyticsController {
 	public ModelAndView resolveView(PortletRequest request, PortletResponse response) throws PortalException, SystemException {
 		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
 		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));
+		HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
 		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);
 		ConfigurationDTO configurationDTO = configurationExpert.getConfiguration(pII);
 		modelAttrs.put("configuration", configurationDTO);
 		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);        
-        
+        String fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
+        modelAttrs.put("fullCurrentURL", fullCurrentURL);
+	    
+	    //Authorize Google API
+		String authorizationCode = httpReq.getParameter("code");
+		String redirect_url = null;
+	    if (authorizationCode != null) {
+	    	redirect_url = fullCurrentURL.replace("&code=", "").replace("?code=", "").replace(authorizationCode, "");
+	    }		
+	    //If there are not access to google api, request authorization
+	    if (!googleAnalyticsDataExpert.isValidAccess(configurationDTO, authorizationCode, redirect_url, pII)) {
+	    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
+	    	modelAttrs.put("authURL", authURL);
+		//If there are access retrieve the Accounts DTO
+	    } else {
+			GoogleAnalyticsAccountsDTO googleAnalyticsAccountsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsAccounts(configurationDTO, authorizationCode, redirect_url, locale, pII);
+			if (googleAnalyticsAccountsDTO.isSuccess()){
+				modelAttrs.put("googleAnalyticsAccounts", googleAnalyticsAccountsDTO);
+			} else {
+				modelAttrs.put("errorMessage", googleAnalyticsAccountsDTO.getMessage());
+			}			 
+		}	    
+	    
 		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
 	
@@ -114,6 +147,7 @@ public class GoogleAnalyticsController {
     public ModelAndView adminSaveConfigurationsController(
              String client_id
             ,String api_key
+            ,String client_secret
             ,String account_id
             ,String property_id
             ,String profile_id
@@ -132,6 +166,9 @@ public class GoogleAnalyticsController {
 		}
 		if (api_key != null) {
 			configurationOptions.put(GoogleAnalyticsConfigurationEnum.APIKEY.getKey(), api_key);
+		}
+		if (client_secret != null) {
+			configurationOptions.put(GoogleAnalyticsConfigurationEnum.CLIENT_SECRET.getKey(), client_secret);
 		}
 		if (account_id != null) {
 			configurationOptions.put(GoogleAnalyticsConfigurationEnum.ACCOUNT_ID.getKey(), account_id);

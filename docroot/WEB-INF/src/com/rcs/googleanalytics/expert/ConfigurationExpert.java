@@ -39,6 +39,8 @@ public class ConfigurationExpert {
 		configurationDTO.setProfile_id(getConfigurationValueByPropertyName(GoogleAnalyticsConfigurationEnum.PROFILE_ID.getKey(), pII));
 		configurationDTO.setProperty_id(getConfigurationValueByPropertyName(GoogleAnalyticsConfigurationEnum.PROPERTY_ID.getKey(), pII));
 		configurationDTO.setToken(getConfigurationValueByPropertyName(GoogleAnalyticsConfigurationEnum.TOKEN.getKey(), pII));
+		configurationDTO.setRefreshtoken(getConfigurationValueByPropertyName(GoogleAnalyticsConfigurationEnum.REFRESHTOKEN.getKey(), pII));
+		configurationDTO.setClient_secret(getConfigurationValueByPropertyName(GoogleAnalyticsConfigurationEnum.CLIENT_SECRET.getKey(), pII));
 		return configurationDTO;
 	}
 	

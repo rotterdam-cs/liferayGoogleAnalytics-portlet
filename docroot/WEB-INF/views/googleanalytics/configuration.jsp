@@ -38,9 +38,13 @@
         <label for="<portlet:namespace/>client_id"><fmt:message key="com.rcs.googleanalytics.configuration.client.id"/>:</label>
         <input type="text" name="<portlet:namespace/>client_id" class="required span6" id="<portlet:namespace/>client_id" value="${configuration.client_id}" />
     </p>
+<%--<!--     <p> -->--%>
+<%--         <label for="<portlet:namespace/>api_key"><fmt:message key="com.rcs.googleanalytics.configuration.api.key"/>:</label> --%>
+<%--         <input type="text" name="<portlet:namespace/>api_key" class="required span6" id="<portlet:namespace/>api_key" value="${configuration.api_key}" /> --%>
+<%--<!--     </p> -->--%>
     <p>
-        <label for="<portlet:namespace/>api_key"><fmt:message key="com.rcs.googleanalytics.configuration.api.key"/>:</label>
-        <input type="text" name="<portlet:namespace/>api_key" class="required span6" id="<portlet:namespace/>api_key" value="${configuration.api_key}" />
+        <label for="<portlet:namespace/>client_secret"><fmt:message key="com.rcs.googleanalytics.configuration.client.secret"/>:</label>
+        <input type="text" name="<portlet:namespace/>client_secret" class="required span6" id="<portlet:namespace/>client_secret" value="${configuration.client_secret}" />
     </p>
     <p>
         <button type="button" class="btn" id="<portlet:namespace/>save-configuration" <c:if test="${configuration.client_id != '' && configuration.api_key != ''}" >disabled="true"</c:if> ><fmt:message key="com.rcs.general.save"/></button>
@@ -114,9 +118,9 @@
             	showInfo(response[1]);               
                 jQuery(".sense-admin-right-menu li.disabled").removeClass("disabled");
                 jQuery("#<portlet:namespace/>save-configuration").attr("disabled", true);
-                var apiKey = jQuery("#<portlet:namespace/>api_key").val();
-        		var clientId = jQuery("#<portlet:namespace/>client_id").val();
-                retreiveGoogleAnalyticsAccountInfo(apiKey, clientId);
+//                 var apiKey = jQuery("#<portlet:namespace/>api_key").val();
+//         		var clientId = jQuery("#<portlet:namespace/>client_id").val();
+//                 retreiveGoogleAnalyticsAccountInfo(apiKey, clientId);
             }            
         }
         
@@ -135,7 +139,16 @@
         jQuery(document).on("keypress", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
         });
-        jQuery(document).on("keypress", "#<portlet:namespace/>api_key", function() {
+        jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+        });
+        <%--jQuery(document).on("keypress", "#<portlet:namespace/>api_key", function() {
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+        });--%>
+        jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+        });
+        jQuery(document).on("change", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
         });
         
@@ -160,10 +173,14 @@
 	       	       required: true
 	       	      ,maxlength: 150
        		  }
-       		  ,'<portlet:namespace/>api_key': {
+       		<%--,'<portlet:namespace/>api_key': {
 	       	       required: true
 	       	      ,maxlength: 150
-       		  }
+       		  }--%>
+       		  ,'<portlet:namespace/>client_secret': {
+	       	       required: true
+	       	      ,maxlength: 150
+      		  }
        	  }
        	});
         

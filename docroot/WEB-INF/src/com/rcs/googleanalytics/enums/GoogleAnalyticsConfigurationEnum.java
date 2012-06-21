@@ -3,11 +3,13 @@ package com.rcs.googleanalytics.enums;
 public enum GoogleAnalyticsConfigurationEnum {
 	
 	CLIENT_ID("client_id"),
-	APIKEY("api_key"),
+	APIKEY("api_key"),//@@TODO Not used?
+	CLIENT_SECRET("client_secret"),
 	ACCOUNT_ID("account_id"),
 	PROPERTY_ID("property_id"),
 	PROFILE_ID("profile_id"),
-	TOKEN("token");
+	TOKEN("token"),
+	REFRESHTOKEN("refreshtoken");
 	
 	private String key;
 

@@ -6,11 +6,13 @@ public class ConfigurationDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String client_id;
-	private String api_key;
+	private String api_key;//@@TODO Not used?
 	private String account_id;
 	private String property_id;
 	private String profile_id;
 	private String token;
+	private String refreshtoken;
+	private String client_secret;
 	
 	public ConfigurationDTO() {		
 	}
@@ -62,5 +64,21 @@ public class ConfigurationDTO implements Serializable {
 	public void setToken(String token) {
 		this.token = token;
 	}
+
+	public String getRefreshtoken() {
+		return refreshtoken;
+	}
+
+	public void setRefreshtoken(String refreshtoken) {
+		this.refreshtoken = refreshtoken;
+	}
+
+	public String getClient_secret() {
+		return client_secret;
+	}
+
+	public void setClient_secret(String client_secret) {
+		this.client_secret = client_secret;
+	}	
 	
 }
