@@ -1,11 +1,13 @@
 package com.rcs.googleanalytics.expert;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -22,24 +24,37 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
-import com.rcs.common.ServiceActionResult;
 import com.rcs.googleanalytics.dto.ConfigurationDTO;
 import com.rcs.googleanalytics.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.googleanalytics.dto.GoogleAnalyticsParamAccountDTO;
 import com.rcs.googleanalytics.dto.GoogleAnalyticsParamProfilesDTO;
 import com.rcs.googleanalytics.dto.GoogleAnalyticsParamPropertiesDTO;
 import com.rcs.googleanalytics.enums.GoogleAnalyticsConfigurationEnum;
-import com.rcs.service.model.Configuration;
 
+/**
+ * @author Prj.M@x <pablo.rendon@rotterdam-cs.com>
+ */
 @Component
+@Scope("session")
 public class GoogleAnalyticsDataExpert {
 	private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsDataExpert.class);
-
+	
+	private Credential sessionCredential;
+	private HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+	private JsonFactory JSON_FACTORY = new JacksonFactory();
+	
 	@Autowired
 	private GoogleTokenExpert googleTokenExpert;
 
 	@Autowired
     private ConfigurationExpert configurationExpert;
+	
+	/**
+	 * Kill session credential
+	 */
+	public void killSessionCredential() {
+		sessionCredential=null;
+	}
 	
 	/**
 	 * @param configurationDTO
@@ -55,17 +70,79 @@ public class GoogleAnalyticsDataExpert {
 			,PortalInstanceIdentifier pII
 	) throws Exception {		
 		Analytics response = null;
+		Credential credential = null;
 		
-		HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-		JsonFactory JSON_FACTORY = new JacksonFactory();
-
-		Credential credential = googleTokenExpert.getToken(
-			 configurationDTO.getClient_id()
-			,configurationDTO.getClient_secret()
-			,configurationDTO.getRefreshtoken()
-			,authorizationCode
-			,redirect_url
-		);
+		if (sessionCredential == null) {
+			log.error("first getCredential");
+			credential = getCredential(configurationDTO, authorizationCode, redirect_url, pII);			
+		} else {
+			log.error("sesson credential");
+			credential = sessionCredential;
+		}
+		
+		if (credential != null) {			
+			response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);			
+			if (response == null) {
+				log.error("second getCredential");
+				credential = getCredential(configurationDTO, authorizationCode, redirect_url, pII);
+				response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);
+				log.error("RESPONSE NULL");
+			}			
+		}
+		return response;
+	}
+	
+	/**
+	 * Build Analytics Object
+	 * @param credential
+	 * @param HTTP_TRANSPORT
+	 * @param JSON_FACTORY
+	 * @return
+	 */
+	private Analytics getAnalytics(Credential credential, HttpTransport HTTP_TRANSPORT, JsonFactory JSON_FACTORY) {
+		Analytics analytics = null;
+		try{
+			if (credential != null) {
+				analytics = Analytics.builder(HTTP_TRANSPORT, JSON_FACTORY)
+				.setApplicationName("Liferay-Google-Analytics")
+				.setHttpRequestInitializer(credential).build();
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return analytics;
+	}
+	
+	/**
+	 * Get Credential and update session and stored credential
+	 * @param configurationDTO
+	 * @param authorizationCode
+	 * @param redirect_url
+	 * @param pII
+	 * @return
+	 * @throws Exception
+	 */
+	private Credential getCredential(
+			 ConfigurationDTO configurationDTO
+			,String authorizationCode
+			,String redirect_url
+			,PortalInstanceIdentifier pII
+	) {
+		Credential credential = null;
+		try {
+			credential = googleTokenExpert.getToken(
+				 configurationDTO.getClient_id()
+				,configurationDTO.getClient_secret()
+				,configurationDTO.getRefreshtoken()
+				,authorizationCode
+				,redirect_url
+			);
+		} catch (Exception e) {
+			log.error("Not Valid credential generated");
+		}
+		
+		//Update session credential
+		sessionCredential = credential;
 		
 		if (credential != null) {
 	    	//Store Credentials
@@ -77,13 +154,9 @@ public class GoogleAnalyticsDataExpert {
 	    	if (retrievedRefreshoken != null && !retrievedRefreshoken.isEmpty()) {
 	    		configurationExpert.updateConfiguration(pII, GoogleAnalyticsConfigurationEnum.REFRESHTOKEN.getKey(), retrievedRefreshoken);
 	    	}
-	    	
-	    	//Build Analytics Object
-			response = Analytics.builder(HTTP_TRANSPORT, JSON_FACTORY)
-				.setApplicationName("Liferay-Google-Analytics")
-				.setHttpRequestInitializer(credential).build();
 		}
-		return response;
+		
+		return credential;
 	}
 	
 	/**
@@ -174,8 +247,7 @@ public class GoogleAnalyticsDataExpert {
 								}					
 								googleAnalyticsParamAccountDTO.addWebProperties(googleAnalyticsParamPropertiesDTO);
 								googleAnalyticsAccountDTO.setSuccess(true);
-							}
-							
+							}							
 						}				
 						googleAnalyticsAccountDTO.addAccounts(googleAnalyticsParamAccountDTO);
 					}
@@ -183,8 +255,12 @@ public class GoogleAnalyticsDataExpert {
 			}
 			
 		} catch (GoogleJsonResponseException e) {
+			killSessionCredential();
+			googleAnalyticsAccountDTO.setSuccess(false);
+			googleAnalyticsAccountDTO.appendMessage(e.getDetails().getMessage());
 		    log.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
 		} catch (Exception e) {
+			killSessionCredential();
 			e.printStackTrace();
 		}
 		

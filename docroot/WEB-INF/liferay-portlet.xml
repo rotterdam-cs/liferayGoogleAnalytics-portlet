@@ -34,12 +34,12 @@
         <footer-portlet-javascript>/js/fancyapps-fancyBox/source/jquery.fancybox.pack.js</footer-portlet-javascript> 
 <!--         <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>		 -->
 		
-		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3_auth.js</footer-portlet-javascript>
-		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3.js</footer-portlet-javascript>
-		<footer-portlet-javascript>/js/google_analytics_api_v3/analyticsCharts.js</footer-portlet-javascript>
-		<footer-portlet-javascript>/js/google_analytics_api_v3/chart_Example.js</footer-portlet-javascript>
+<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3_auth.js</footer-portlet-javascript> -->
+<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3.js</footer-portlet-javascript> -->
+<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analyticsCharts.js</footer-portlet-javascript> -->
+<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/chart_Example.js</footer-portlet-javascript> -->
 <!-- 		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=handleClientLoad</footer-portlet-javascript> -->
-		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=retreiveGoogleAnalyticsAccountInfo</footer-portlet-javascript>
+<!-- 		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=retreiveGoogleAnalyticsAccountInfo</footer-portlet-javascript> -->
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
 		<css-class-wrapper>liferayGoogleAnalytics-portlet</css-class-wrapper>
 	</portlet>

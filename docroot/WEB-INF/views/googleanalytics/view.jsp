@@ -29,42 +29,13 @@
     </div>
 </div>
 
-<c:if test="${authURL != '' && authURL != null}" ><a href="${authURL}">Authorize -> ${authURL}</a></c:if>
-
-<c:if test="${googleAnalyticsAccounts != null}" >
-	<c:forEach items="${googleAnalyticsAccounts.accounts}" var="row" varStatus="rowCounter">  
-		Account ${row.value} - ${row.html}<br />
-		<c:forEach items="${row.webProperties}" var="row2" varStatus="rowCounter2">  
-			--------WebProperties ${row2.value} - ${row2.html}<br />
-			<c:forEach items="${row2.profiles}" var="row3" varStatus="rowCounter3">  
-				-------------------Profiles ${row3.value} - ${row3.html}<br />
-			</c:forEach>			
-		</c:forEach>		
-	</c:forEach>
-</c:if>
-
 
 <script type="text/javascript">
-	<%--//Retreive Google Analytics Account Information--%>
-	function retreiveGoogleAnalyticsAccountInfo(apiKey, clientId) {
-		<%--//Initial or manual autentication--%>
-		if (apiKey != null && apiKey != "" && clientId != null && clientId != "") {
-			jQuery("#<portlet:namespace/>detailed-configuration").mask('Retrieving Google Analytics account information...');
-        	handleClientLoadConfiguration(apiKey, clientId);        
-		}
-		<%--//Automatic autentication based on the token if it exists--%>
-		<c:if test="${configuration.token != ''}" >
-			else {
-				jQuery("#<portlet:namespace/>detailed-configuration").mask('Retrieving Google Analytics account information...');
-				//setTimeout("handleClientLoadTokenConfiguration('${configuration.token}')", 1000);
-			}
-		</c:if>
-	}
-	
+		
     Liferay.on('portletReady', function(event) {            
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
-         	<c:if test="${errors != ''}" >messages = ${messages};</c:if>
+         	<c:if test="${messages != ''}" >messages = ${messages};</c:if>
         	namespace = '<portlet:namespace/>';
     		current_account_id = 0;
         	current_property_id = 0;

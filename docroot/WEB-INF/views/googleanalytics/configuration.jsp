@@ -38,10 +38,6 @@
         <label for="<portlet:namespace/>client_id"><fmt:message key="com.rcs.googleanalytics.configuration.client.id"/>:</label>
         <input type="text" name="<portlet:namespace/>client_id" class="required span6" id="<portlet:namespace/>client_id" value="${configuration.client_id}" />
     </p>
-<%--<!--     <p> -->--%>
-<%--         <label for="<portlet:namespace/>api_key"><fmt:message key="com.rcs.googleanalytics.configuration.api.key"/>:</label> --%>
-<%--         <input type="text" name="<portlet:namespace/>api_key" class="required span6" id="<portlet:namespace/>api_key" value="${configuration.api_key}" /> --%>
-<%--<!--     </p> -->--%>
     <p>
         <label for="<portlet:namespace/>client_secret"><fmt:message key="com.rcs.googleanalytics.configuration.client.secret"/>:</label>
         <input type="text" name="<portlet:namespace/>client_secret" class="required span6" id="<portlet:namespace/>client_secret" value="${configuration.client_secret}" />
@@ -51,6 +47,18 @@
         <button type="button" class="btn btn-primary" id="<portlet:namespace/>authorize-button" style="display: none;"><fmt:message key="com.rcs.general.authorize"/></button>
     </p>
 </form>
+
+<%-- <c:if test="${googleAnalyticsAccounts != null}" > --%>
+<%-- 	<c:forEach items="${googleAnalyticsAccounts.accounts}" var="row" varStatus="rowCounter">   --%>
+<%-- 		Account ${row.value} - ${row.html} - ${row.selected}<br /> --%>
+<%-- 		<c:forEach items="${row.webProperties}" var="row2" varStatus="rowCounter2">   --%>
+<%-- 			--------WebProperties ${row2.value} - ${row2.html} - ${row2.selected}<br /> --%>
+<%-- 			<c:forEach items="${row2.profiles}" var="row3" varStatus="rowCounter3">   --%>
+<%-- 				-------------------Profiles ${row3.value} - ${row3.html} - ${row3.selected}<br /> --%>
+<%-- 			</c:forEach>			 --%>
+<%-- 		</c:forEach>		 --%>
+<%-- 	</c:forEach> --%>
+<%-- </c:if> --%>
 
 <form class="well" id="<portlet:namespace/>detailedconfigurationform">
     <div id="<portlet:namespace/>detailed-configuration">
@@ -86,8 +94,9 @@
     </div>
 </form>
 
-<script type="text/javascript">	
 
+
+<script type="text/javascript">	
 	function updateToken(token) {
 		jQuery.post("${adminSaveConfigurationURL}",{
 		        "configurationname" : "token"                
@@ -103,11 +112,71 @@
 		);         
 	} 
 
+	function queryAccountsConfiguration(googleAnalyticsAccountsJSON){
+		clearSelectOption("<portlet:namespace/>account_id");
+		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
+		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
+            setSelectOption("<portlet:namespace/>account_id", value.value, value.html);
+            if (value.selected == true) {
+				jQuery("#<portlet:namespace/>account_id").val(value.value);
+				queryWebpropertiesConfiguration(googleAnalyticsAccountsJSON, value.value);
+			}
+        });
+	}
+	function queryWebpropertiesConfiguration(googleAnalyticsAccountsJSON, accountId){
+		clearSelectOption("<portlet:namespace/>property_id");
+		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
+		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
+			if (value.value == accountId) {
+				jQuery.each(value.webProperties, function(indexwp, valuewp) {
+					setSelectOption("<portlet:namespace/>property_id", valuewp.value, valuewp.html);
+					if (valuewp.selected == true) {
+						jQuery("#<portlet:namespace/>property_id").val(valuewp.value);
+						queryProfilesConfiguration(googleAnalyticsAccountsJSON, accountId, valuewp.value);
+					}
+				});
+			}
+        });
+	}
+	function queryProfilesConfiguration(googleAnalyticsAccountsJSON, accountId, selected_value){
+		clearSelectOption("<portlet:namespace/>profile_id");
+		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
+		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
+			if (value.value == accountId) {
+				jQuery.each(value.webProperties, function(indexwp, valuewp) {
+					if (valuewp.value == selected_value) {
+						jQuery.each(valuewp.profiles, function(indexprof, valueprof) {
+							setSelectOption("<portlet:namespace/>profile_id", valueprof.value, valueprof.html);
+							if (valueprof.selected == true) {
+								jQuery("#<portlet:namespace/>profile_id").val(valueprof.value);
+								jQuery("#<portlet:namespace/>save-detailed-configuration").removeClass("hidden");
+							}
+						});
+					}
+				});
+			}
+        });
+	}
+	 
+	function handleAuthClick(event) {
+		window.location="${authURL}";
+		return false;
+	}
+	
     jQuery(function() {
-    	<c:if test="${configuration.account_id != ''}" >current_account_id = ${configuration.account_id};</c:if>
-    	<c:if test="${configuration.property_id != ''}" >current_property_id = '${configuration.property_id}';</c:if>
-    	<c:if test="${configuration.profile_id != ''}" >current_profile_id = ${configuration.profile_id};</c:if>
- 
+    	<c:if test="${googleAnalyticsAccountsJSON != null && googleAnalyticsAccountsJSON != ''}" >
+    	   var googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
+    	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);
+    	   console.log(googleAnalyticsAccountsJSON);
+    	</c:if>
+    	<c:if test="${authURL != null && authURL != ''}" >
+    		jQuery("#<portlet:namespace/>authorize-button").show();
+    		jQuery("#<portlet:namespace/>save-configuration").hide();
+    		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();    		
+    	</c:if>
+    	<c:if test="${errorMessage != null && errorMessage != ''}" >showError('${errorMessage}');</c:if>
+    	<c:if test="${infoMessage != null && infoMessage != ''}" >showInfo('${infoMessage}');</c:if>
+    	
         <%--//Handle SAVE Response--%>
         function saveHandleResponse(responseText, statusText, xhr, form) {  
         	jQuery("#<portlet:namespace/>administration-container-mask").unmask();
@@ -118,9 +187,6 @@
             	showInfo(response[1]);               
                 jQuery(".sense-admin-right-menu li.disabled").removeClass("disabled");
                 jQuery("#<portlet:namespace/>save-configuration").attr("disabled", true);
-//                 var apiKey = jQuery("#<portlet:namespace/>api_key").val();
-//         		var clientId = jQuery("#<portlet:namespace/>client_id").val();
-//                 retreiveGoogleAnalyticsAccountInfo(apiKey, clientId);
             }            
         }
         
@@ -142,9 +208,6 @@
         jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
         });
-        <%--jQuery(document).on("keypress", "#<portlet:namespace/>api_key", function() {
-            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
-        });--%>
         jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
         });
@@ -173,10 +236,6 @@
 	       	       required: true
 	       	      ,maxlength: 150
        		  }
-       		<%--,'<portlet:namespace/>api_key': {
-	       	       required: true
-	       	      ,maxlength: 150
-       		  }--%>
        		  ,'<portlet:namespace/>client_secret': {
 	       	       required: true
 	       	      ,maxlength: 150
@@ -222,7 +281,7 @@
         jQuery("#<portlet:namespace/>account_id").on("change", function() {
         	var selected_value = jQuery(this).val();
         	if (selected_value != 0) {
-        		queryWebpropertiesConfiguration(selected_value);
+        		queryWebpropertiesConfiguration(googleAnalyticsAccountsJSON, selected_value);
         	} else {
         		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
         		clearSelectOption("<portlet:namespace/>property_id");
@@ -233,7 +292,7 @@
         	var selected_value = jQuery(this).val();
         	var selectedAccountId = jQuery("#<portlet:namespace/>account_id").val();
         	if (selected_value != 0 && selectedAccountId != 0) {
-        		queryProfilesConfiguration(selectedAccountId, selected_value);
+        		queryProfilesConfiguration(googleAnalyticsAccountsJSON, selectedAccountId, selected_value);
         	} else {
         		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
         		clearSelectOption("<portlet:namespace/>profile_id");

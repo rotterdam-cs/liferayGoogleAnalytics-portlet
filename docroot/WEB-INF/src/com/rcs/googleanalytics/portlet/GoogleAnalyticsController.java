@@ -15,6 +15,7 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.ModelAndView;
@@ -22,6 +23,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.gson.Gson;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -47,9 +49,16 @@ import com.rcs.service.model.Configuration;
  * @author Prj.M@x <pablo.rendon@rotterdam-cs.com>
  */
 @Controller
+@Scope("session")
 @RequestMapping("VIEW")
 public class GoogleAnalyticsController {
 	private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsController.class);
+	
+	private ConfigurationDTO configurationDTO;
+	private Locale locale;
+	private PortalInstanceIdentifier pII;
+	private String fullCurrentURL;
+	private String code;
 	
 	@Autowired
     private ConfigurationExpert configurationExpert;
@@ -62,9 +71,9 @@ public class GoogleAnalyticsController {
 	
 	@Autowired
 	private GoogleAnalyticsDataExpert googleAnalyticsDataExpert;
-	
+		
 	/**
-	 * 
+	 * Main view
 	 * @param request
 	 * @param response
 	 * @return
@@ -74,42 +83,56 @@ public class GoogleAnalyticsController {
 	@RenderMapping
 	public ModelAndView resolveView(PortletRequest request, PortletResponse response) throws PortalException, SystemException {
 		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
-		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));
 		HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
-		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);
-		ConfigurationDTO configurationDTO = configurationExpert.getConfiguration(pII);
-		modelAttrs.put("configuration", configurationDTO);
+		locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));		
+		pII = utilsExpert.getPortalInstanceIdentifier(request);
+		configurationDTO = configurationExpert.getConfiguration(pII);
+		fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
+		code = httpReq.getParameter("code");
 		
+		modelAttrs.put("configuration", configurationDTO);		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);        
-        String fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
         modelAttrs.put("fullCurrentURL", fullCurrentURL);
 	    
-	    //Authorize Google API
-		String authorizationCode = httpReq.getParameter("code");
-		String redirect_url = null;
-	    if (authorizationCode != null) {
-	    	redirect_url = fullCurrentURL.replace("&code=", "").replace("?code=", "").replace(authorizationCode, "");
-	    }		
-	    //If there are not access to google api, request authorization
-	    if (!googleAnalyticsDataExpert.isValidAccess(configurationDTO, authorizationCode, redirect_url, pII)) {
-	    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
-	    	modelAttrs.put("authURL", authURL);
-		//If there are access retrieve the Accounts DTO
-	    } else {
-			GoogleAnalyticsAccountsDTO googleAnalyticsAccountsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsAccounts(configurationDTO, authorizationCode, redirect_url, locale, pII);
-			if (googleAnalyticsAccountsDTO.isSuccess()){
-				modelAttrs.put("googleAnalyticsAccounts", googleAnalyticsAccountsDTO);
-			} else {
-				modelAttrs.put("errorMessage", googleAnalyticsAccountsDTO.getMessage());
-			}			 
-		}	    
-	    
+        //modelAttrs= getGoogleAnalyticsAccountData(modelAttrs, httpReq);
+	    	    
 		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
 	
 	/**
-	 * 
+	 * @param modelAttrs
+	 * @param httpReq
+	 * @return
+	 */
+	private HashMap<String, Object> getGoogleAnalyticsAccountData(HashMap<String, Object> modelAttrs) {		
+		//Authorize Google API
+		String redirect_url = null;
+	    if (code != null) {
+	    	redirect_url = fullCurrentURL.replace("&code=", "").replace("?code=", "").replace(code, "");
+	    }
+
+	    //If there are not access to google api, request authorization
+	    if (!googleAnalyticsDataExpert.isValidAccess(configurationDTO, code, redirect_url, pII)) {
+	    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
+	    	modelAttrs.put("authURL", authURL);
+		//If there are access retrieve the Accounts DTO
+	    } else {
+			GoogleAnalyticsAccountsDTO googleAnalyticsAccountsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsAccounts(configurationDTO, code, redirect_url, locale, pII);
+			if (googleAnalyticsAccountsDTO.isSuccess()){
+				modelAttrs.put("googleAnalyticsAccounts", googleAnalyticsAccountsDTO);
+				Gson gson = new Gson();
+		        String googleAnalyticsAccountsJSON = gson.toJson(googleAnalyticsAccountsDTO);
+		        modelAttrs.put("googleAnalyticsAccountsJSON", googleAnalyticsAccountsJSON);
+			} else {
+				modelAttrs.put("errorMessage", googleAnalyticsAccountsDTO.getMessage());
+			}			 
+		}
+	    return modelAttrs;		
+	}
+	
+	/**
+	 * Handle Ajax sections
 	 * @param section
 	 * @param request
 	 * @param response
@@ -122,12 +145,12 @@ public class GoogleAnalyticsController {
             ,ResourceRequest request
             ,ResourceResponse response
     ) throws Exception {		
-	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
-		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);		
-        ConfigurationDTO configurationDTO = configurationExpert.getConfiguration(pII);
+	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();	
+	    HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
         modelAttrs.put("configuration", configurationDTO);        
-        if (section.equals(ADMIN_SECTION_CONFIGURATION)) {            
-            //Account          
+        if (section.equals(ADMIN_SECTION_CONFIGURATION)) {
+        	//Account
+        	modelAttrs= getGoogleAnalyticsAccountData(modelAttrs);                      
         } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {            
             //Analytics                      
         } 
@@ -135,7 +158,7 @@ public class GoogleAnalyticsController {
     }
 	
 	/**
-	 * 
+	 * Save several configurations
 	 * @param client_id
 	 * @param api_key
 	 * @param request
@@ -154,9 +177,7 @@ public class GoogleAnalyticsController {
             ,ResourceRequest request
             ,ResourceResponse response
     ) throws Exception {		
-		HashMap<String, String> configurationOptions = new HashMap<String, String>();       
-		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));	
-		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);
+		HashMap<String, String> configurationOptions = new HashMap<String, String>();
 		LocalResponse result = new LocalResponse();
 		String message = "";
         
@@ -195,7 +216,9 @@ public class GoogleAnalyticsController {
                 return null;
             }
         }
-		
+				
+        configurationDTO = configurationExpert.getConfiguration(pII);
+        
         result.setSuccess(true);
         message += ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.configuration.saved", locale);
         result.setMessage(message);
@@ -205,7 +228,7 @@ public class GoogleAnalyticsController {
 	}
 	
 	/**
-	 * 
+	 * Save one configuration parameter
 	 * @param configurationname
 	 * @param configurationvalue
 	 * @param request
@@ -219,9 +242,7 @@ public class GoogleAnalyticsController {
             ,String configurationvalue
             ,ResourceRequest request
             ,ResourceResponse response
-    ) throws Exception {		     
-		Locale locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));	
-		PortalInstanceIdentifier pII = utilsExpert.getPortalInstanceIdentifier(request);
+    ) throws Exception {
 		LocalResponse result = new LocalResponse();
 		String message = "";
        
@@ -237,6 +258,8 @@ public class GoogleAnalyticsController {
             response.getWriter().write(utilsExpert.getJsonFromLocalResponse(result));
             return null;
         }
+        
+        configurationDTO = configurationExpert.getConfiguration(pII);
         
         result.setSuccess(true);
         message += ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.configuration.saved", locale);
