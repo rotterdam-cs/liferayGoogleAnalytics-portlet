@@ -29,26 +29,13 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
 		
     Liferay.on('portletReady', function(event) {            
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
          	<c:if test="${messages != ''}" >messages = ${messages};</c:if>
-        	namespace = '<portlet:namespace/>';
-    		current_account_id = 0;
-        	current_property_id = 0;
-        	current_profile_id = 0;
-    		var maxValue = 1;
-    		var previous = 'Previous';
-    		var dateFormat = 'mm/dd/yy';
-    		var dateFormatLong = 'dddd, mmmm dd, yyyy';
-    		var selProfileId;
-    		var dataType;
-    		var currentKPI;
-    		var plot;
-    		var data;  
+         	namespace = '<portlet:namespace/>';
             <%--//Load the first section (Account)--%>
             jQuery(function () {
                 jQuery('a[data-toggle="tab"]:first').tab('show');

@@ -2,6 +2,18 @@
 //@author Prj.M@x <pablo.rendon@rotterdam-cs.com>
 //************************************************
 
+function getMaxValue(array, maxValue) {
+	if (array.length > 0) {
+		for ( var i = 0; i < array.length; i++) {
+			var compValue = parseInt(array[i].replace(",",""),10);
+			if (compValue > maxValue) {
+				maxValue = compValue;
+			}
+		}
+	}
+	return maxValue;
+}
+
 function showTooltip(x, y, contents, pos) {	
 	toolSize = 170;
 	var sizex = jQuery(window).width();	
@@ -50,7 +62,7 @@ function secondsToTime(secs) {
     return hours + minutes + ':' + seconds;
 }
 
-function drawGraph(key, value, past, type) {
+function drawGraph(key, pastDates, value, past, type) {
     dataType = type;
     currentKPI = value;
     var currentData = [];
@@ -68,9 +80,9 @@ function drawGraph(key, value, past, type) {
     }
 
     var data = [];
-    data.push({        
-    	label: new Date(key[0]).format(dateFormat) + ' - ' + new Date(key[key.length-1]).format(dateFormat),
-        data: currentData,
+    data.push({
+    	label: ' ' + new Date(key[0]*1).format(dateFormat) + ' - ' + new Date(key[key.length-1]*1).format(dateFormat),
+    	data: currentData,
         color: '#0077CC',
         lines: {
             show: true,
@@ -83,9 +95,9 @@ function drawGraph(key, value, past, type) {
         }
     });
 	if (past) {
-	    data.push({    	
-	    	label: new Date(key[0] - (31 *24 * 60 * 60 * 1000)).format(dateFormat) + ' - ' + new Date(key[key.length-1] - (31 *24 * 60 * 60 * 1000)).format(dateFormat),
-	        color: '#FF9900',
+	    data.push({	    	
+	    	label: ' ' + new Date(pastDates[0]*1).format(dateFormat) + ' - ' + new Date(pastDates[pastDates.length-1]*1).format(dateFormat),
+	    	color: '#FF9900',
 	        lines: {
 	            show: true,
 	            lineWidth: 1
@@ -196,7 +208,7 @@ function drawGraph(key, value, past, type) {
     });
 }
 
-function drawSparkline(key, dates, data, past, type, inverted, textGraph) {	
+function drawSparkline(key, dates, pastDates, data, past, type, inverted, textGraph) {	
     var curvalue = (type === 'time') ? secondsToTime(data.cur.value) : data.cur.value;
     var postText = (type=="percentage")?" %":"";
     jQuery("#" + key + 'Summary .item_value').text(curvalue + postText);
@@ -230,24 +242,24 @@ function drawSparkline(key, dates, data, past, type, inverted, textGraph) {
 
     jQuery("#" + key + 'Summary a').on('click', function (e) {
         e.preventDefault();
-        drawGraph(dates, data, past, type);
+        drawGraph(dates, pastDates, data, past, type);
     });
     jQuery("#" + key + 'Sparkline .f_sparkline_inner img').remove();    
     jQuery("#" + key + 'Sparkline .f_sparkline_inner').append('<img src="' + imgsrc + '">');    
     jQuery("#" + key + 'Sparkline .f_sparkline_inner img').on('click', function (e) {
-        drawGraph(dates, data, past, type);
+        drawGraph(dates, pastDates, data, past, type);
     });
 
 }
 
 function drawSparklines(ga, past) {
-    drawSparkline('Visits', ga.dates, ga.visits, past, 'int', false, false);
-    drawSparkline('NewVisits', ga.dates, ga.visitors, past, 'int', false, false);
-    drawSparkline('Pageviews', ga.dates, ga.pageviews, past, 'int', false, false);
-    drawSparkline('PagesVisit', ga.dates, ga.pageviewsPerVisit, past, 'double', false, false);
-    drawSparkline('AvgVisitDuration', ga.dates, ga.avgTimeOnSite, past, 'time', false, false);
-    drawSparkline('BounceRate', ga.dates, ga.visitBounceRate, past, 'percentage', true, false);    
-    drawSparkline('NewVisitsPer', ga.dates, ga.percentNewVisits, past, 'percentage', false, false);
+    drawSparkline('Visits', ga.dates, ga.pastDates, ga.visits, past, 'int', false, false);
+    drawSparkline('NewVisits', ga.dates, ga.pastDates, ga.visitors, past, 'int', false, false);
+    drawSparkline('Pageviews', ga.dates, ga.pastDates, ga.pageviews, past, 'int', false, false);
+    drawSparkline('PagesVisit', ga.dates, ga.pastDates, ga.pageviewsPerVisit, past, 'double', false, false);
+    drawSparkline('AvgVisitDuration', ga.dates, ga.pastDates, ga.avgTimeOnSite, past, 'time', false, false);
+    drawSparkline('BounceRate', ga.dates, ga.pastDates, ga.visitBounceRate, past, 'percentage', true, false);    
+    drawSparkline('NewVisitsPer', ga.dates, ga.pastDates, ga.percentNewVisits, past, 'percentage', false, false);
     
     // Hover effect
     jQuery('.visualization').hover(function () {

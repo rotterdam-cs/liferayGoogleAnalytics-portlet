@@ -31,7 +31,6 @@
 </div>
 
 
-
 <form class="well" id="<portlet:namespace/>configurationform">
 	<h3><fmt:message key="com.rcs.googleanalytics.register.api.console"/> <a data-toggle="modal" href="#<portlet:namespace/>helpWindow"><i class="icon-question-sign"></i></a></h3>  
     <p>
@@ -43,24 +42,12 @@
         <input type="text" name="<portlet:namespace/>client_secret" class="required span6" id="<portlet:namespace/>client_secret" value="${configuration.client_secret}" />
     </p>
     <p>
-        <button type="button" class="btn" id="<portlet:namespace/>save-configuration" <c:if test="${configuration.client_id != '' && configuration.api_key != ''}" >disabled="true"</c:if> ><fmt:message key="com.rcs.general.save"/></button>
-        <button type="button" class="btn btn-primary" id="<portlet:namespace/>authorize-button" style="display: none;"><fmt:message key="com.rcs.general.authorize"/></button>
+        <button type="button" class="btn" id="<portlet:namespace/>save-configuration" <c:if test="${configuration.client_id != '' && configuration.client_secret != ''}" >disabled="true"</c:if> ><fmt:message key="com.rcs.general.save"/></button>
+        <button type="button" class="btn btn-primary" id="<portlet:namespace/>authorize-button" <c:if test="${authURL == null || (googleAnalyticsAccounts != null && googleAnalyticsAccounts.success == 'TRUE') }" > style="display: none"; </c:if> ><fmt:message key="com.rcs.general.authorize"/></button>
     </p>
 </form>
 
-<%-- <c:if test="${googleAnalyticsAccounts != null}" > --%>
-<%-- 	<c:forEach items="${googleAnalyticsAccounts.accounts}" var="row" varStatus="rowCounter">   --%>
-<%-- 		Account ${row.value} - ${row.html} - ${row.selected}<br /> --%>
-<%-- 		<c:forEach items="${row.webProperties}" var="row2" varStatus="rowCounter2">   --%>
-<%-- 			--------WebProperties ${row2.value} - ${row2.html} - ${row2.selected}<br /> --%>
-<%-- 			<c:forEach items="${row2.profiles}" var="row3" varStatus="rowCounter3">   --%>
-<%-- 				-------------------Profiles ${row3.value} - ${row3.html} - ${row3.selected}<br /> --%>
-<%-- 			</c:forEach>			 --%>
-<%-- 		</c:forEach>		 --%>
-<%-- 	</c:forEach> --%>
-<%-- </c:if> --%>
-
-<form class="well" id="<portlet:namespace/>detailedconfigurationform">
+<form class="well" id="<portlet:namespace/>detailedconfigurationform" <c:if test="${googleAnalyticsAccounts == null || googleAnalyticsAccounts.success != 'TRUE' }" > style="display: none"; </c:if> >
     <div id="<portlet:namespace/>detailed-configuration">
     	<div class="control-group">            
             <div class="controls">
@@ -97,21 +84,6 @@
 
 
 <script type="text/javascript">	
-	function updateToken(token) {
-		jQuery.post("${adminSaveConfigurationURL}",{
-		        "configurationname" : "token"                
-		        ,"configurationvalue" : token
-		    }, function(responseText) {
-		    	var response = getResponseTextInfo(responseText);
-	            if (!response[0]) {
-	            	console.log("error updating token: " + response[1]);                           
-	            } else {
-	            	console.log("token updated: " + response[1]);	                
-	            }   
-		    }
-		);         
-	} 
-
 	function queryAccountsConfiguration(googleAnalyticsAccountsJSON){
 		clearSelectOption("<portlet:namespace/>account_id");
 		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
@@ -157,9 +129,13 @@
 			}
         });
 	}
-	 
+	var authUrl = "${authURL}"; 
 	function handleAuthClick(event) {
-		window.location="${authURL}";
+		if (authUrl!=""){
+			window.location=authUrl;
+		} else {
+			console.log("invalid Authorization URL");
+		}
 		return false;
 	}
 	
@@ -167,7 +143,6 @@
     	<c:if test="${googleAnalyticsAccountsJSON != null && googleAnalyticsAccountsJSON != ''}" >
     	   var googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
     	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);
-    	   console.log(googleAnalyticsAccountsJSON);
     	</c:if>
     	<c:if test="${authURL != null && authURL != ''}" >
     		jQuery("#<portlet:namespace/>authorize-button").show();
@@ -187,7 +162,18 @@
             	showInfo(response[1]);               
                 jQuery(".sense-admin-right-menu li.disabled").removeClass("disabled");
                 jQuery("#<portlet:namespace/>save-configuration").attr("disabled", true);
-            }            
+                var responseBodyObj = jQuery.parseJSON(response[2]);
+                authUrl = responseBodyObj.authURL;
+                if (responseBodyObj.isValidAccess) {
+                	jQuery("#<portlet:namespace/>authorize-button").hide();
+            		jQuery("#<portlet:namespace/>save-configuration").show();
+            		jQuery("#<portlet:namespace/>detailedconfigurationform").show();
+                } else {
+                	jQuery("#<portlet:namespace/>authorize-button").show();
+            		jQuery("#<portlet:namespace/>save-configuration").hide();
+            		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();
+                }
+            }
         }
         
         <%--//Handle Deatiled SAVE Response--%>
@@ -203,16 +189,24 @@
         
         <%--//Enable save when onchange--%>
         jQuery(document).on("keypress", "#<portlet:namespace/>client_id", function() {
-            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false); 
+            jQuery("#<portlet:namespace/>save-configuration").show();
+            jQuery("#<portlet:namespace/>authorize-button").hide();
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
-            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
+            jQuery("#<portlet:namespace/>save-configuration").show();
+            jQuery("#<portlet:namespace/>authorize-button").hide();
         });
         jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
-            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
+            jQuery("#<portlet:namespace/>save-configuration").show();
+            jQuery("#<portlet:namespace/>authorize-button").hide();
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_secret", function() {
-            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);            
+            jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
+            jQuery("#<portlet:namespace/>save-configuration").show();
+            jQuery("#<portlet:namespace/>authorize-button").hide();
         });
         
         <%--//Form Options for Save Button --%>

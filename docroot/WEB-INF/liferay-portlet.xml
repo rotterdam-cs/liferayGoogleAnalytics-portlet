@@ -12,34 +12,28 @@
 		<header-portlet-css>/js/bootstrap/css/bootstrap.css</header-portlet-css>
         <header-portlet-css>/js/bootstrap/css/bootstrap-responsive.css</header-portlet-css>
         <header-portlet-css>/js/jquery-loadmask/jquery.loadmask.css</header-portlet-css>
-<!--         <header-portlet-css>/js/jquery-ui-1.8.16.custom-redmond/css/redmond/jquery-ui-1.8.16.custom.css</header-portlet-css> -->
-        <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>
-        
-        <header-portlet-css>/js/google_analytics_api_v3/analytics_dashboard.css</header-portlet-css>
+<!--    <header-portlet-css>/js/jquery-ui-1.8.16.custom-redmond/css/redmond/jquery-ui-1.8.16.custom.css</header-portlet-css> -->
+        <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>        
+        <header-portlet-css>/js/google_analytics/analytics_dashboard.css</header-portlet-css>
+        <header-portlet-css>/js/rangeDatePicker/css/datepicker/base.css</header-portlet-css>
+        <header-portlet-css>/js/rangeDatePicker/css/datepicker/clean.css</header-portlet-css>
 		<header-portlet-css>/css/main.css</header-portlet-css>
 		
 		<header-portlet-javascript>/js/jquery/jquery-1.7.1.min.js</header-portlet-javascript>
 		<header-portlet-javascript>/js/bootstrap/js/bootstrap.js</header-portlet-javascript>
         <header-portlet-javascript>/js/jquery-loadmask/jquery.loadmask.min.js</header-portlet-javascript>        
         
-        <footer-portlet-javascript>/js/google_analytics_api_v3/date.js</footer-portlet-javascript>
-        <footer-portlet-javascript>/js/google_analytics_api_v3/jquery.flot.min.js</footer-portlet-javascript>
-        <footer-portlet-javascript>/js/google_analytics_api_v3/analyticsChartDataEncoder.js</footer-portlet-javascript>
-        
+        <footer-portlet-javascript>/js/google_analytics/date.js</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/google_analytics/jquery.flot.min.js</footer-portlet-javascript>        
         <footer-portlet-javascript>/js/jquery-validation-1.9.0/jquery.validate.min.js</footer-portlet-javascript>
         <footer-portlet-javascript>/js/jquery-validation-1.9.0/localization/messageslocale.jsp</footer-portlet-javascript>
         <footer-portlet-javascript>/js/jquery.form/jquery.form.js</footer-portlet-javascript>
         <footer-portlet-javascript>/js/responseHandler.js</footer-portlet-javascript>
-<!--         <footer-portlet-javascript>/js/jquery-ui-1.8.16.custom-redmond/js/jquery-ui-1.8.16.custom.min.js</footer-portlet-javascript> -->
+<!--    <footer-portlet-javascript>/js/jquery-ui-1.8.16.custom-redmond/js/jquery-ui-1.8.16.custom.min.js</footer-portlet-javascript> -->
         <footer-portlet-javascript>/js/fancyapps-fancyBox/source/jquery.fancybox.pack.js</footer-portlet-javascript> 
-<!--         <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>		 -->
-		
-<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3_auth.js</footer-portlet-javascript> -->
-<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analytics_api_v3.js</footer-portlet-javascript> -->
-<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/analyticsCharts.js</footer-portlet-javascript> -->
-<!-- 		<footer-portlet-javascript>/js/google_analytics_api_v3/chart_Example.js</footer-portlet-javascript> -->
-<!-- 		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=handleClientLoad</footer-portlet-javascript> -->
-<!-- 		<footer-portlet-javascript>https://apis.google.com/js/client.js?onload=retreiveGoogleAnalyticsAccountInfo</footer-portlet-javascript> -->
+	    <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/google_analytics/chartGraphicator.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/rangeDatePicker/js/datepicker.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
 		<css-class-wrapper>liferayGoogleAnalytics-portlet</css-class-wrapper>
 	</portlet>

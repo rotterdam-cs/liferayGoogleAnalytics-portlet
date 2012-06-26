@@ -2,18 +2,18 @@ package com.rcs.googleanalytics.portlet;
 
 import static com.rcs.common.Constants.ADMIN_SECTION_CONFIGURATION;
 import static com.rcs.common.Constants.ADMIN_SECTION_VIEW_REPORTS;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.gson.Gson;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -37,6 +35,7 @@ import com.rcs.common.ResourceBundleHelper;
 import com.rcs.common.ServiceActionResult;
 import com.rcs.googleanalytics.dto.ConfigurationDTO;
 import com.rcs.googleanalytics.dto.GoogleAnalyticsAccountsDTO;
+import com.rcs.googleanalytics.dto.LiferayGoogleAnalyticsDTO;
 import com.rcs.googleanalytics.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.googleanalytics.enums.MessagesEnum;
 import com.rcs.googleanalytics.expert.ConfigurationExpert;
@@ -94,8 +93,6 @@ public class GoogleAnalyticsController {
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);        
         modelAttrs.put("fullCurrentURL", fullCurrentURL);
-	    
-        //modelAttrs= getGoogleAnalyticsAccountData(modelAttrs, httpReq);
 	    	    
 		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
@@ -107,15 +104,17 @@ public class GoogleAnalyticsController {
 	 */
 	private HashMap<String, Object> getGoogleAnalyticsAccountData(HashMap<String, Object> modelAttrs) {		
 		//Authorize Google API
-		String redirect_url = null;
+		String redirect_url = fullCurrentURL;
 	    if (code != null) {
 	    	redirect_url = fullCurrentURL.replace("&code=", "").replace("?code=", "").replace(code, "");
 	    }
 
 	    //If there are not access to google api, request authorization
 	    if (!googleAnalyticsDataExpert.isValidAccess(configurationDTO, code, redirect_url, pII)) {
-	    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
-	    	modelAttrs.put("authURL", authURL);
+	    	if (configurationDTO.getClient_id() != null && !configurationDTO.getClient_id().isEmpty()){
+		    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
+		    	modelAttrs.put("authURL", authURL);
+	    	}
 		//If there are access retrieve the Accounts DTO
 	    } else {
 			GoogleAnalyticsAccountsDTO googleAnalyticsAccountsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsAccounts(configurationDTO, code, redirect_url, locale, pII);
@@ -146,13 +145,26 @@ public class GoogleAnalyticsController {
             ,ResourceResponse response
     ) throws Exception {		
 	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();	
-	    HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
         modelAttrs.put("configuration", configurationDTO);        
         if (section.equals(ADMIN_SECTION_CONFIGURATION)) {
         	//Account
         	modelAttrs= getGoogleAnalyticsAccountData(modelAttrs);                      
-        } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {            
-            //Analytics                      
+        	//Analytics
+        } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {
+        	Date endDate = new Date();
+        	Calendar gc = GregorianCalendar.getInstance();
+            gc.setTime(new Date());         
+            gc.add(Calendar.DAY_OF_MONTH, -30); 
+        	Date startDate = gc.getTime();
+        	
+        	modelAttrs.put("startDate", startDate.getTime());
+        	modelAttrs.put("endDate", endDate.getTime());
+        	
+        	LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate);
+        	Gson gson = new Gson();
+	        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
+	        
+	        modelAttrs.put("googleAnalyticsData", gad);
         } 
         return new ModelAndView("googleanalytics/" + section, modelAttrs);       
     }
@@ -216,13 +228,32 @@ public class GoogleAnalyticsController {
                 return null;
             }
         }
-				
+		
         configurationDTO = configurationExpert.getConfiguration(pII);
         
         result.setSuccess(true);
         message += ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.configuration.saved", locale);
         result.setMessage(message);
         log.error(message);
+        
+        if (client_id != null && client_secret != null){
+	        googleAnalyticsDataExpert.killSessionCredential();
+	        if (configurationDTO.getClient_id() != null && !configurationDTO.getClient_id().isEmpty()){
+		    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);
+		    	configurationDTO.setAuthURL(authURL);	    	
+		    	
+		    	 if (googleAnalyticsDataExpert.isValidAccess(configurationDTO, code, fullCurrentURL, pII)) {
+		    		 configurationDTO.setValidAccess(true);
+		    	 } else {
+		    		 configurationDTO.setValidAccess(false);
+		    	 }		    	
+		    	Gson gson = new Gson();
+		        String body = gson.toJson(configurationDTO);
+		        result.setBody(body);
+	    	}   
+        }
+        
+        
         response.getWriter().write(utilsExpert.getJsonFromLocalResponse(result));
         return null;	
 	}
@@ -267,6 +298,24 @@ public class GoogleAnalyticsController {
         log.error(message);
         response.getWriter().write(utilsExpert.getJsonFromLocalResponse(result));
         return null;	
-	}	
+	}
+	
+	@ResourceMapping(value = "getAnalyticsData")
+    public ModelAndView getAnalyticsDataController(
+             Long startDateS
+            ,Long endDateS
+            ,ResourceRequest request
+            ,ResourceResponse response
+    ) throws Exception {       
+		Date startDate = new Date(startDateS);
+		Date endDate = new Date(endDateS);		
+		
+		LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate);
+    	Gson gson = new Gson();
+        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
+
+        response.getWriter().write(gad);
+        return null;	
+	}
 	
 }

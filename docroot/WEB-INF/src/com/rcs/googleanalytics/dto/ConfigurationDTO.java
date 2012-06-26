@@ -13,6 +13,8 @@ public class ConfigurationDTO implements Serializable {
 	private String token;
 	private String refreshtoken;
 	private String client_secret;
+	private String authURL;
+	private boolean isValidAccess;
 	
 	public ConfigurationDTO() {		
 	}
@@ -79,6 +81,24 @@ public class ConfigurationDTO implements Serializable {
 
 	public void setClient_secret(String client_secret) {
 		this.client_secret = client_secret;
+	}
+
+	public String getAuthURL() {
+		return authURL;
+	}
+
+	public void setAuthURL(String authURL) {
+		this.authURL = authURL;
+	}
+
+	public boolean isValidAccess() {
+		return isValidAccess;
+	}
+
+	public void setValidAccess(boolean isValidAccess) {
+		this.isValidAccess = isValidAccess;
 	}	
+	
+	
 	
 }
