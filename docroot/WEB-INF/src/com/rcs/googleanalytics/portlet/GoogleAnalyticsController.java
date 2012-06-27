@@ -2,6 +2,7 @@ package com.rcs.googleanalytics.portlet;
 
 import static com.rcs.common.Constants.ADMIN_SECTION_CONFIGURATION;
 import static com.rcs.common.Constants.ADMIN_SECTION_VIEW_REPORTS;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -89,10 +90,10 @@ public class GoogleAnalyticsController {
 		fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
 		code = httpReq.getParameter("code");
 		
+		modelAttrs= getGoogleAnalyticsAccountData(modelAttrs); 
 		modelAttrs.put("configuration", configurationDTO);		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
-	    modelAttrs.put("messages", messagesJson);        
-        modelAttrs.put("fullCurrentURL", fullCurrentURL);
+	    modelAttrs.put("messages", messagesJson);
 	    	    
 		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
@@ -145,26 +146,46 @@ public class GoogleAnalyticsController {
             ,ResourceResponse response
     ) throws Exception {		
 	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();	
-        modelAttrs.put("configuration", configurationDTO);        
-        if (section.equals(ADMIN_SECTION_CONFIGURATION)) {
-        	//Account
-        	modelAttrs= getGoogleAnalyticsAccountData(modelAttrs);                      
+        modelAttrs.put("configuration", configurationDTO);
+        
+        //Account
+        if (section.equals(ADMIN_SECTION_CONFIGURATION)) {        	
+        	modelAttrs= getGoogleAnalyticsAccountData(modelAttrs); 
+        	modelAttrs.put("fullCurrentURL", fullCurrentURL);
+        	URL url = new URL(fullCurrentURL);
+        	modelAttrs.put("serverURL", "http://"+url.getHost());
+        
         	//Analytics
         } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {
+        	//Default Date Range
         	Date endDate = new Date();
         	Calendar gc = GregorianCalendar.getInstance();
             gc.setTime(new Date());         
             gc.add(Calendar.DAY_OF_MONTH, -30); 
-        	Date startDate = gc.getTime();
-        	
+        	Date startDate = gc.getTime();        	
         	modelAttrs.put("startDate", startDate.getTime());
         	modelAttrs.put("endDate", endDate.getTime());
         	
-        	LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate);
-        	Gson gson = new Gson();
-	        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
-	        
-	        modelAttrs.put("googleAnalyticsData", gad);
+        	//Default Previous Date Range
+        	Calendar gcPrev = GregorianCalendar.getInstance();
+        	gcPrev.setTime(new Date());
+        	gcPrev.add(Calendar.DAY_OF_MONTH, -60); 
+			Date startDatePrev = gcPrev.getTime();
+			Date endDatePrev=startDate;
+			modelAttrs.put("startDatePrev", startDatePrev.getTime());
+        	modelAttrs.put("endDatePrev", endDatePrev.getTime());
+        	
+        	if (configurationDTO.getProfile_id() != null &&  !configurationDTO.getProfile_id().isEmpty()){        	
+	        	LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate, startDatePrev, endDatePrev);
+	        	Gson gson = new Gson();
+		        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
+		        
+		        modelAttrs.put("googleAnalyticsData", gad);
+        	} else {
+        		String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.error.graphics.profile.not.selected", locale);
+                modelAttrs.put("errorMessage", message);
+                return new ModelAndView("googleanalytics/top_messages", modelAttrs);
+        	}
         } 
         return new ModelAndView("googleanalytics/" + section, modelAttrs);       
     }
@@ -304,13 +325,22 @@ public class GoogleAnalyticsController {
     public ModelAndView getAnalyticsDataController(
              Long startDateS
             ,Long endDateS
+            ,Long startDatePrevS
+            ,Long endDatePrevS
             ,ResourceRequest request
             ,ResourceResponse response
     ) throws Exception {       
 		Date startDate = new Date(startDateS);
 		Date endDate = new Date(endDateS);		
+		Date startDatePrev = null;
+		Date endDatePrev=null;
 		
-		LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate);
+		if (startDatePrevS != null && endDatePrevS != null) {
+			startDatePrev = new Date(startDatePrevS);
+			endDatePrev = new Date(endDatePrevS);
+		}
+		
+		LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsData(configurationDTO, null, null, locale, pII, startDate, endDate, startDatePrev, endDatePrev);
     	Gson gson = new Gson();
         String gad = gson.toJson(liferayGoogleAnalyticsDTO);
 

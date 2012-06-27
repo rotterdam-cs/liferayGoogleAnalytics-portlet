@@ -5,15 +5,15 @@ import java.io.Serializable;
 public class ConfigurationDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private String client_id;
-	private String api_key;//@@TODO Not used?
-	private String account_id;
-	private String property_id;
-	private String profile_id;
-	private String token;
-	private String refreshtoken;
-	private String client_secret;
-	private String authURL;
+	private String client_id = null;
+	private String api_key = null;//@@TODO Not used?
+	private String account_id = null;
+	private String property_id = null;
+	private String profile_id = null;
+	private String token = null;
+	private String refreshtoken = null;
+	private String client_secret = null;
+	private String authURL = null;
 	private boolean isValidAccess;
 	
 	public ConfigurationDTO() {		

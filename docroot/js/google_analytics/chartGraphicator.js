@@ -63,13 +63,16 @@ function secondsToTime(secs) {
 }
 
 function drawGraph(key, pastDates, value, past, type) {
-    dataType = type;
+    var datesArray = new Array();
+    
+	dataType = type;
     currentKPI = value;
     var currentData = [];
     len = Math.max(key.length, value.cur.data.length);
 
     for (var i=0; i < key.length; i++) {
         currentData.push([key[i], value.cur.data[i]]);
+        datesArray[key[i]]=pastDates[i];
     }
 
     var pastData = [];
@@ -171,11 +174,12 @@ function drawGraph(key, pastDates, value, past, type) {
                 if (tooltip) {
                     tooltip.remove();
                 }
-
+                
                 var x = item.datapoint[0].toFixed(2),
                     y = formatDataPoint(item.datapoint[1].toFixed(2), dataType);
-                
+                                
                 var date = new Date(parseInt(x,10));
+                var datePrev = new Date(parseInt(datesArray[parseInt(x,10)],10));
                 
                 content = '<span class="datecurrent"> ' + date.format(dateFormatLong) + ' </span><br>';
 				
@@ -184,14 +188,18 @@ function drawGraph(key, pastDates, value, past, type) {
                 }
                 if(item.seriesIndex === 0 && showPast) {
                 	y2 = formatDataPoint(plot.getData()[1].data[item.dataIndex][1], dataType);
-                	content += '<br><span class="datepast"> ' + new Date(date.getTime() - (31 *24 * 60 * 60 * 1000)).format(dateFormatLong);
-                	content += '</span><br> ' + previous + ': <strong>' + y2 + '</strong>';
+                	if (!isNaN(y2)){
+	                	content += '<br><span class="datepast"> ' + datePrev.format(dateFormatLong);
+	                	content += '</span><br> ' + previous + ': <strong>' + y2 + '</strong>';
+                	}
                 }
                 if(item.seriesIndex === 1) {
                 	y1 = formatDataPoint(plot.getData()[0].data[item.dataIndex][1], dataType);
                 	content += currentKPI.title+': <strong>' + y1 + '</strong>';
-                	content += '<br><span class="datepast"> ' + new Date(date.getTime() - (31 *24 * 60 * 60 * 1000)).format(dateFormatLong);
-                	content += '</span><br> ' + previous +  ': <strong>' + y + '</strong>';
+                	if (!isNaN(y)){
+	                	content += '<br><span class="datepast"> ' + datePrev.format(dateFormatLong);
+	                	content += '</span><br> ' + previous +  ': <strong>' + y + '</strong>';
+                	}
                 }
                 
                 showTooltip(item.pageX, item.pageY, content, pos);
@@ -231,13 +239,11 @@ function drawSparkline(key, dates, pastDates, data, past, type, inverted, textGr
     		imgsrc = imgsrc + data.cur.data.toString();
     	}
     }
-
+    jQuery("#" + key + 'Summary .statistic p').remove();
     if (past) {
         var cssclass = (data.prev.delta.charAt(0) === '+' && !inverted) ? 'positive_comparison' : 'negative_comparison';
         var pastvalue = (type === 'time') ? secondsToTime(data.prev.value) : data.prev.value;        
         jQuery("#" + key + 'Summary .statistic').append('<p class="date_comparison"><span class="comparison_value"> ' + previous + ': ' + pastvalue +' <span class="' + cssclass + '"> ' + '(' + data.prev.delta + ')' +' </span> </span></p>');
-    } else {
-    	jQuery("#" + key + 'Summary .statistic p').remove();
     }
 
     jQuery("#" + key + 'Summary a').on('click', function (e) {

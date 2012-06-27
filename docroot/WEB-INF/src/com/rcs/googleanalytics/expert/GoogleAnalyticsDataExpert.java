@@ -12,6 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.http.NoHttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -104,18 +106,23 @@ public class GoogleAnalyticsDataExpert {
 			,PortalInstanceIdentifier pII
 			,Date startDate
 			,Date endDate
+			,Date startDatePrev
+			,Date endDatePrev
 	) {		
 		LiferayGoogleAnalyticsDTO liferayGoogleAnalyticsDTO = new LiferayGoogleAnalyticsDTO();
 		try {		
-			int days = diffBetweenDates(startDate.getTime(), endDate.getTime());
-			Calendar gc = GregorianCalendar.getInstance();
-			gc.setTime(startDate);         
-			gc.add(Calendar.DAY_OF_MONTH, -days);        
-			Date startDatePrev = gc.getTime();
+			if (startDatePrev == null || endDatePrev == null){
+				int days = diffBetweenDates(startDate.getTime(), endDate.getTime());
+				Calendar gc = GregorianCalendar.getInstance();
+				gc.setTime(startDate);         
+				gc.add(Calendar.DAY_OF_MONTH, -days);        
+				startDatePrev = gc.getTime();
+				endDatePrev=startDate;
+			}
 						
 			Analytics analytics = initializeAnalytics(configurationDTO, authorizationCode, redirect_url, pII);
 			GaData gaData = getResults(analytics, configurationDTO.getProfile_id(),startDate,endDate);
-			GaData gaDataPrev = getResults(analytics, configurationDTO.getProfile_id(), startDatePrev, startDate);
+			GaData gaDataPrev = getResults(analytics, configurationDTO.getProfile_id(), startDatePrev, endDatePrev);
 			
 			if (gaData.getTotalResults() > 0) {
 				Map<String, String> totals = gaData.getTotalsForAllResults();
@@ -292,6 +299,9 @@ public class GoogleAnalyticsDataExpert {
 			googleAnalyticsAccountDTO.setSuccess(false);
 			googleAnalyticsAccountDTO.appendMessage(e.getDetails().getMessage());
 		    log.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
+		} catch (NoHttpResponseException e) {
+			killSessionCredential();
+			e.printStackTrace();
 		} catch (Exception e) {
 			killSessionCredential();
 			e.printStackTrace();

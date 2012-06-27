@@ -13,6 +13,21 @@
 <portlet:resourceURL var="getAnalyticsDataURL" id="getAnalyticsData" />
 <portlet:defineObjects />
 
+<div class="modal hide fade" id="<portlet:namespace/>helpWindow">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">x</a>
+        <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.view.reports"/> <span style="float: right;"></span></h3>
+    </div>
+    <div class="modal-body">
+        <p><fmt:message key="com.rcs.googleanalytics.admin.help.graphics1"/></p>
+        <p><fmt:message key="com.rcs.googleanalytics.admin.help.graphics2"/></p>        
+        <p><fmt:message key="com.rcs.googleanalytics.admin.help.graphics3"/></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal"><fmt:message key="com.rcs.general.close"/></a>
+    </div>
+</div>
+
 <div id="mod_analytics">
 	
 	<div id="date-range">
@@ -20,8 +35,15 @@
 		    <span></span>
 		    <a href="#">&#9660;</a>
 	  	</div>	   
-	  	<div id="datepicker-calendar">
+	  	<div id="datepicker-calendar" class="datepicker-calendar">
 		  	<a class="btn btn-primary" href="#">
+				<i class="icon-ok icon-white"></i>
+				<fmt:message key="com.rcs.general.apply"/>
+			</a>
+		</div>		
+		<div id="datepicker-calendar-prev" class="datepicker-calendar">
+			<b><fmt:message key="com.rcs.googleanalytics.graphic.select.compare.to.daterange"/></b>
+			<a class="btn btn-warning" href="#">
 				<i class="icon-ok icon-white"></i>
 				<fmt:message key="com.rcs.general.apply"/>
 			</a>
@@ -31,6 +53,7 @@
 	<div id="legend"></div>
 	<div id="analyticsControls"><input type="checkbox" id="pastMonth" name="pastMonth"  /> <fmt:message key="com.rcs.googleanalytics.graphic.compare.to.past"/></div>
 	<div class="clr"></div>	
+		
 	<div id="flot" style="width:100%;height:150px;"></div>	
 	<div class="report_section">
 		<div class="section">		
@@ -74,6 +97,8 @@
 	var maxValue = 1;
 	var to = new Date(${endDate});
   	var from = new Date(${startDate});
+  	var toPrev = new Date(${endDatePrev});
+  	var fromPrev = new Date(${startDatePrev});
 	
 	function init() {
 		showPast = (jQuery('#pastMonth').attr('checked'))?true:false;
@@ -95,6 +120,16 @@
 			}
 		});
 		
+		function updateComboDateRange(datef, datet,datefprev, datetprev){
+// 			var text = datef.getDate()+' '+datef.getMonthName(true)+' '+datef.getFullYear()+' - '+datet.getDate()+' '+datet.getMonthName(true)+' '+datet.getFullYear();
+// 			if (showPast && datefprev!=null && datetprev!=null) {
+// 				text += " / "+datef.getDate()+' '+datef.getMonthName(true)+' '+datef.getFullYear()+' - '+datet.getDate()+' '+datet.getMonthName(true)+' '+datet.getFullYear();
+// 			}
+			var text = "Select a diferent date range";
+			jQuery('#date-range-field span').text(text);
+			
+	    }
+		
 		//DateRangeSelector		  
 		  jQuery('#datepicker-calendar').DatePicker({
 		    inline: true,
@@ -105,19 +140,42 @@
 		    onChange: function(dates,el) {
 		      // update the range display
 		      jQuery('#date-range-field span').text(dates[0].getDate()+' '+dates[0].getMonthName(true)+', '+dates[0].getFullYear()+' - '+dates[1].getDate()+' '+dates[1].getMonthName(true)+', '+dates[1].getFullYear());
+		      updateComboDateRange(dates[0], dates[1], fromPrev, toPrev);
 		      from = dates[0];
 		      to = dates[1];
 		     }
 		   });
+			
+		  jQuery('#datepicker-calendar-prev').DatePicker({
+			    inline: true,
+			    date: [fromPrev, toPrev],
+			    calendars: 3,
+			    mode: 'range',
+			    current: new Date(toPrev.getFullYear(), toPrev.getMonth() - 1, 1),
+			    onChange: function(dates,el) {
+			      // update the range display
+			      jQuery('#date-range-field span').text(dates[0].getDate()+' '+dates[0].getMonthName(true)+', '+dates[0].getFullYear()+' - '+dates[1].getDate()+' '+dates[1].getMonthName(true)+', '+dates[1].getFullYear());
+			      updateComboDateRange(from, to, dates[0], dates[1]);
+			      fromPrev = dates[0];
+			      toPrev = dates[1];
+			     }
+	       });
 		   
 		   // initialize the special date dropdown field
-		   jQuery('#date-range-field span').text(from.getDate()+' '+from.getMonthName(true)+', '+from.getFullYear()+' - '+
-		                                        to.getDate()+' '+to.getMonthName(true)+', '+to.getFullYear());
+		   updateComboDateRange(from, to, fromPrev, toPrev);
 		   
 		   // bind a click handler to the date display field, which when clicked
 		   // toggles the date picker calendar, flips the up/down indicator arrow,
 		   jQuery('#date-range-field').bind('click', function(){
 		     jQuery('#datepicker-calendar').toggle();
+		     if (showPast){
+		     	jQuery('#datepicker-calendar-prev').toggle();
+		     	jQuery("#datepicker-calendar-prev .btn").show();
+		     	jQuery("#datepicker-calendar .btn").hide();
+		     } else {
+		    	jQuery("#datepicker-calendar-prev .btn").hide();
+		     	jQuery("#datepicker-calendar .btn").show();
+		     }
 		     if(jQuery('#date-range-field a').text().charCodeAt(0) == 9660) {
 		       // switch to up-arrow
 		       jQuery('#date-range-field a').html('&#9650;');
@@ -131,16 +189,17 @@
 		     }
 		     return false;
 		   });
-		   
-		   function hidecal(){
+	
+		   function hidecal() {
 			   jQuery('#datepicker-calendar').hide();
+			   jQuery('#datepicker-calendar-prev').hide();
 		       jQuery('#date-range-field a').html('&#9660;');
 		       jQuery('#date-range-field').css({borderBottomLeftRadius:5, borderBottomRightRadius:5});
 		       jQuery('#date-range-field a').css({borderBottomRightRadius:5});
 		   }
-		   
+	
 		   jQuery('html').click(function() {
-		     if(jQuery('#datepicker-calendar').is(":visible")) {
+		     if(jQuery('#datepicker-calendar').is(":visible")){
 		    	 hidecal();
 		     }
 		   });
@@ -150,25 +209,35 @@
 		   jQuery('#datepicker-calendar').click(function(event){
 		     event.stopPropagation();
 		   });
-		   
-		   jQuery("#datepicker-calendar .btn").click(function(event){
-		   		event.stopPropagation();
-		   		jQuery("#mod_analytics").mask('<fmt:message key="com.rcs.googleanalytics.retrieving.data"/>');
-		     	jQuery.get("${getAnalyticsDataURL}"
-    		 	,{
-		   			"startDateS" : from.getTime()
-    		 		,"endDateS" : to.getTime()
-    		 	}
-    		 	,function(analyticsData) {
-    		 		data = jQuery.parseJSON(analyticsData);
-    		 		init();
-    		 		hidecal();
-    		 	}
-    		 );
-		     
+		   jQuery('#datepicker-calendar-prev').click(function(event){
+		     event.stopPropagation();
 		   });
-		
-		
+		   
+		   jQuery(".datepicker-calendar .btn").click(function(event){
+		   		event.stopPropagation();
+		   		jQuery("#mod_analytics").mask('<fmt:message key="com.rcs.googleanalytics.retrieving.data"/>');		   		
+			   	 if (showPast) {
+			   		 var params = {
+			   			"startDateS" : from.getTime()
+	    		 		,"endDateS" : to.getTime()
+	    		 		,"startDatePrevS" : fromPrev.getTime()
+	    		 		,"endDatePrevS" : toPrev.getTime()
+	    		 	 };
+			   	 } else {
+			   		var params = {
+			   			"startDateS" : from.getTime()
+	    		 		,"endDateS" : to.getTime()
+	    		 	 };
+			   	 }		   		
+		     	jQuery.get("${getAnalyticsDataURL}"
+	    		 	,params
+	    		 	,function(analyticsData) {
+	    		 		data = jQuery.parseJSON(analyticsData);
+	    		 		init();
+	    		 		hidecal();
+	    		 	}
+    		 	);		     
+		   });
 		
 	});
 </script>

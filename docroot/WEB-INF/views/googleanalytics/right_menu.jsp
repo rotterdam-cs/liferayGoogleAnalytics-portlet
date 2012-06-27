@@ -12,7 +12,7 @@
 
 <fmt:setBundle basename="Language"/>
 <portlet:defineObjects />
- 
+
 <ul class="nav nav-list">                    
        <li>
            <a href="#<%=Constants.ADMIN_SECTION_CONFIGURATION%>" data-toggle="tab" rel="admin-menu-configuration">
@@ -20,7 +20,7 @@
            </a>
        </li>
 
-       <li>
+       <li <c:if test="${googleAnalyticsAccounts == null || googleAnalyticsAccounts.success != 'TRUE' || configuration.profile_id == '' }" >class="disabled"</c:if> >
            <a href="#<%=Constants.ADMIN_SECTION_VIEW_REPORTS%>" data-toggle="tab" rel="admin-menu-analytics">
                <i class="icon-signal"></i><fmt:message key="com.rcs.admin.view.reports"/>                           
            </a>

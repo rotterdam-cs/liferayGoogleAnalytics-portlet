@@ -20,10 +20,41 @@
         <a class="close" data-dismiss="modal">x</a>
         <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.configuration"/> <span style="float: right;"></span></h3>
     </div>
-    <div class="modal-body">
+    <div class="modal-body">    	
         <p><fmt:message key="com.rcs.googleanalytics.admin.help.configuration1"/></p>
-        <p><fmt:message key="com.rcs.googleanalytics.admin.help.configuration2"/></p>        
+        <p></p>        
+        <p></p>
+        <h4><fmt:message key="com.rcs.googleanalytics.admin.help.configuration2"/></h4>
         <p><fmt:message key="com.rcs.googleanalytics.admin.help.configuration3"/></p>
+
+        <ol>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration4"/></li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration5"/></li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration6"/></li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration7"/></li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration8"/>
+            <ol>
+              <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration9"/></li>
+              <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration10"/></li>
+              <li class="control-group error"><fmt:message key="com.rcs.googleanalytics.admin.help.configuration11"/>
+              <br><textarea disabled="disabled" rows="4" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 60px;">${fullCurrentURL}</textarea></li>
+              <li class="control-group error"><fmt:message key="com.rcs.googleanalytics.admin.help.configuration12"/>
+              <br><textarea disabled="disabled" rows="1" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 20px;">${serverURL}</textarea></li>
+              <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration13"/></li>
+            </ol>
+          </li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration14"/></li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration15"/></li>
+          <li>
+            <fmt:message key="com.rcs.googleanalytics.admin.help.configuration16"/>
+            <ul>
+              <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration17"/></li>
+              <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration18"/></li>
+            </ul>
+          </li>
+          <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration19"/></li>
+        </ol>
+        
     </div>
     <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal"><fmt:message key="com.rcs.general.close"/></a>
@@ -80,8 +111,6 @@
 	      </p>
     </div>
 </form>
-
-
 
 <script type="text/javascript">	
 	function queryAccountsConfiguration(googleAnalyticsAccountsJSON){
@@ -183,7 +212,8 @@
             if (!response[0]) {
             	showError(response[1]);                           
             } else {
-            	showInfo(response[1]);                
+            	showInfo(response[1]);
+            	jQuery(".admin-right-menu li.disabled").removeClass("disabled");
             }            
         }
         
