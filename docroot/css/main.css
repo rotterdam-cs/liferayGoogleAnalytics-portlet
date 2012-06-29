@@ -92,3 +92,20 @@
 #datepicker-calendar-prev tbody.datepickerDays td.datepickerSelected {
   background-color:#FF9900;
 }
+
+/*Pie Styles*/
+.center-table{
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.center-table #visitsPieTxt {
+	margin-right: 60px;
+}
+.center-table .separator {
+	padding-left: 120px;
+}
+.pieTitle{
+	font-weight: bold;
+	font-size: 16px;
+}

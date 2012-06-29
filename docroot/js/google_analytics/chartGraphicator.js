@@ -1,11 +1,74 @@
 //************************************************
 //@author Prj.M@x <pablo.rendon@rotterdam-cs.com>
 //************************************************
+function drawVisitorsPie(data) {
+	var labelTable = '<table style="color:#A69999"><tbody><tr><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px; margin-right:5px;"><div style="width:4px;height:0;border:5px solid #{color};overflow:hidden"></div></div></td><td class="legendLabel"> {label}</td></tr></tbody></table>';
+	var colors = new Array("058DC7", "50B432");
+	
+	var newVisitsData = Number(data.cur.value);
+	var returningVisitsData = 100 - newVisitsData;	
+	var newVisits = '<span style="font-size: 14px;">' + newVisitsData + '% </span>';	
+	var labelNewVisits = labelTable.replace("{label}", newVisits + getLocallizedKey("com.rcs.googleanalytics.new.visitor")).replace("{color}", colors[0]);
+	
+	var returningVisits = '<span style="font-size: 14px;">' + returningVisitsData + '% </span>';	
+	var labelreturningVisits = labelTable.replace("{label}", returningVisits + getLocallizedKey("com.rcs.googleanalytics.returning.visitor")).replace("{color}", colors[1]);
+	
+	var values = new Array(newVisitsData,returningVisitsData);
+	
+	var containerId = "visitsPie";
+	drawPie(containerId, values, colors);
+    jQuery("#" + containerId + 'Txt .textconatiner').html(labelNewVisits + "<br />" + labelreturningVisits);
+}
 
+function drawTraficSourcesPie(data) {
+	var labelTable = '<table style="color:#A69999"><tbody><tr><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px; margin-right:5px;"><div style="width:4px;height:0;border:5px solid #{color};overflow:hidden"></div></div></td><td class="legendLabel"> {label}</td></tr></tbody></table>';
+	var colors = new Array("058DC7", "50B432", "ED561B");
+	
+	var organicSearchData = data.organicVisits;
+	var organicSearch = '<span style="font-size: 14px;">' + organicSearchData + '% </span>';	
+	var labelorganicSearch = labelTable.replace("{label}", organicSearch + getLocallizedKey("com.rcs.googleanalytics.graphic.traffic.source.organic")).replace("{color}", colors[0]);
+	
+	var referralSearchData = data.referralVisits;
+	var referralSearch = '<span style="font-size: 14px;">' + referralSearchData + '% </span>';	
+	var labelreferralSearch = labelTable.replace("{label}", referralSearch + getLocallizedKey("com.rcs.googleanalytics.graphic.traffic.source.referral")).replace("{color}", colors[1]);
+	
+	var directSearchData = data.directVisits;
+	var directSearch = '<span style="font-size: 14px;">' + directSearchData + '% </span>';	
+	var labeldirectSearch = labelTable.replace("{label}", directSearch + getLocallizedKey("com.rcs.googleanalytics.graphic.traffic.source.direct")).replace("{color}", colors[2]);
+	
+	var values = new Array(organicSearchData,referralSearchData,directSearchData);
+	
+	var containerId = "sourcesPie";
+	drawPie(containerId, values, colors);
+    jQuery("#" + containerId + 'Txt .textconatiner').html(labelorganicSearch + "<br />" + labelreferralSearch + "<br />" + labeldirectSearch);
+}
+
+function drawPie(containerId, values, colors) {	
+	var imgsrc = getPieImgSrc(values, colors);
+	jQuery("#" + containerId + 'Img .imgconatiner img').remove();
+    jQuery("#" + containerId + "Img .imgconatiner").append('<img src="' + imgsrc + '">');
+}
+
+function getPieImgSrc(values, colors, width, height) {
+	values = extendedEncode(values, 1);
+	if (colors == null){
+		colors = "058DC7";
+	} else {
+		colors = colors.toString();
+	}
+	var size;
+	if (width == null || height == null){
+		size = "150x150";
+	} else  {
+		size = width + "x" + height;
+	}
+	var imgsrc = "http://chart.apis.google.com/chart?chs=" + size + "&cht=p&chco=" + colors + "&chd=" + values;
+	return imgsrc;	
+}
 function getMaxValue(array, maxValue) {
 	if (array.length > 0) {
 		for ( var i = 0; i < array.length; i++) {
-			var compValue = parseInt(array[i].replace(",",""),10);
+			var compValue = parseInt(array[i]+"".replace(",",""),10);
 			if (compValue > maxValue) {
 				maxValue = compValue;
 			}
@@ -274,4 +337,10 @@ function drawSparklines(ga, past) {
         jQuery(this).find("div").removeClass("hover");
       }
     );
+    
+    //Draw Pies
+    drawVisitorsPie(ga.percentNewVisits);
+    drawTraficSourcesPie(ga);
+    
 }
+

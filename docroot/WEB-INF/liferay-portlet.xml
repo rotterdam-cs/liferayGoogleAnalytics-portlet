@@ -32,6 +32,7 @@
 <!--    <footer-portlet-javascript>/js/jquery-ui-1.8.16.custom-redmond/js/jquery-ui-1.8.16.custom.min.js</footer-portlet-javascript> -->
         <footer-portlet-javascript>/js/fancyapps-fancyBox/source/jquery.fancybox.pack.js</footer-portlet-javascript> 
 	    <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>
+	    <footer-portlet-javascript>/js/google_analytics/analyticsChartDataEncoder.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/google_analytics/chartGraphicator.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/rangeDatePicker/js/datepicker.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>

@@ -80,7 +80,29 @@
 			<div class="sparkline"><div id="NewVisitsPerSparkline"><div class="visualization"><div class="f_sparkline_outer"><div class="f_sparkline_inner"></div></div></div></div> 
 			<div id="NewVisitsPerSummary"><div class="statistic"><div class="primary_value"><span class="labelanalytics"><a href="#"><fmt:message key="com.rcs.googleanalytics.graphic.new.visitsper"/>: </a></span><span class="item_value"></span></div></div></div></div>
 		</div>
+		
 		<div class="clr"></div>
+						
+		<table border="0" class="center-table">
+			<tr>
+				<td colspan="2" style="text-align:center;" class="pieTitle"><fmt:message key="com.rcs.googleanalytics.graphic.type.of.visitors"/></td>
+				<td><span class="separator"> </span></td>
+				<td colspan="2" style="text-align:center;" class="pieTitle"><fmt:message key="com.rcs.googleanalytics.graphic.traffic.sources"/></td>
+			</tr>
+			<tr>
+				<td><span id="visitsPieImg"><span class="imgconatiner" ></span></span></td>
+				<td>
+					<span id="visitsPieTxt"><span class="textconatiner" ></span></span>
+				</td>
+				<td><span class="separator"> </span></td>				
+				<td><span id="sourcesPieImg"><span class="imgconatiner" ></span></span></td>
+				<td>
+					<span id="sourcesPieTxt"><span class="textconatiner" ></span></span>
+				</td>
+			</tr>
+		</table>
+		
+		
 	</div>
 </div>
 
