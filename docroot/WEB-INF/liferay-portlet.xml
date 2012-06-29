@@ -4,7 +4,7 @@
 <liferay-portlet-app>
 	<portlet>
 		<portlet-name>liferayGoogleAnalytics</portlet-name>
-		<icon>/rcs.png</icon>
+		<icon>/google-analytics-icon.png</icon>
 		<control-panel-entry-category>content</control-panel-entry-category>            
         <control-panel-entry-weight>1</control-panel-entry-weight>
 		<instanceable>false</instanceable>
@@ -12,7 +12,6 @@
 		<header-portlet-css>/js/bootstrap/css/bootstrap.css</header-portlet-css>
         <header-portlet-css>/js/bootstrap/css/bootstrap-responsive.css</header-portlet-css>
         <header-portlet-css>/js/jquery-loadmask/jquery.loadmask.css</header-portlet-css>
-<!--    <header-portlet-css>/js/jquery-ui-1.8.16.custom-redmond/css/redmond/jquery-ui-1.8.16.custom.css</header-portlet-css> -->
         <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>        
         <header-portlet-css>/js/google_analytics/analytics_dashboard.css</header-portlet-css>
         <header-portlet-css>/js/rangeDatePicker/css/datepicker/base.css</header-portlet-css>
@@ -29,7 +28,6 @@
         <footer-portlet-javascript>/js/jquery-validation-1.9.0/localization/messageslocale.jsp</footer-portlet-javascript>
         <footer-portlet-javascript>/js/jquery.form/jquery.form.js</footer-portlet-javascript>
         <footer-portlet-javascript>/js/responseHandler.js</footer-portlet-javascript>
-<!--    <footer-portlet-javascript>/js/jquery-ui-1.8.16.custom-redmond/js/jquery-ui-1.8.16.custom.min.js</footer-portlet-javascript> -->
         <footer-portlet-javascript>/js/fancyapps-fancyBox/source/jquery.fancybox.pack.js</footer-portlet-javascript> 
 	    <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>
 	    <footer-portlet-javascript>/js/google_analytics/analyticsChartDataEncoder.js</footer-portlet-javascript>

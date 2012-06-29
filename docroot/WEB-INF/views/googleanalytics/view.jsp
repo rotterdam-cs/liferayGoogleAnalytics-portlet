@@ -23,7 +23,7 @@
             <%@include file="top_messages.jsp" %>
             <div id="<portlet:namespace/>administration-container" ></div>
         </div>
-        <div class="span2 admin-right-menu">
+        <div class="span3 admin-right-menu">
             <%@include file="right_menu.jsp" %>
         </div>
     </div>
