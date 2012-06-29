@@ -37,9 +37,9 @@
               <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration9"/></li>
               <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration10"/></li>
               <li class="control-group error"><fmt:message key="com.rcs.googleanalytics.admin.help.configuration11"/>
-              <br><textarea disabled="disabled" rows="4" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 60px;">${fullCurrentURL}</textarea></li>
+              <br><textarea rows="4" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 60px;">${fullCurrentURL}</textarea></li>
               <li class="control-group error"><fmt:message key="com.rcs.googleanalytics.admin.help.configuration12"/>
-              <br><textarea disabled="disabled" rows="1" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 20px;">${serverURL}</textarea></li>
+              <br><textarea rows="1" id="textarea" class="input-xlarge  uneditable-input" style="width: 500px; height: 20px;">${serverURL}</textarea></li>
               <li><fmt:message key="com.rcs.googleanalytics.admin.help.configuration13"/></li>
             </ol>
           </li>
