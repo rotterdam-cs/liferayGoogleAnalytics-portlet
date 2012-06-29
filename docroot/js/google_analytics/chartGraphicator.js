@@ -1,12 +1,23 @@
 //************************************************
 //@author Prj.M@x <pablo.rendon@rotterdam-cs.com>
 //************************************************
+
+function roundVal(val){
+	var dec = 2;
+	var result = Math.round(val*Math.pow(10,dec))/Math.pow(10,dec);
+	return result;
+}
+
+function fixTotalVal(val){
+	return roundVal(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function drawVisitorsPie(data) {
 	var labelTable = '<table style="color:#A69999"><tbody><tr><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px; margin-right:5px;"><div style="width:4px;height:0;border:5px solid #{color};overflow:hidden"></div></div></td><td class="legendLabel"> {label}</td></tr></tbody></table>';
 	var colors = new Array("058DC7", "50B432");
 	
 	var newVisitsData = Number(data.cur.value);
-	var returningVisitsData = 100 - newVisitsData;	
+	var returningVisitsData = fixTotalVal(100 - newVisitsData);	
 	var newVisits = '<span style="font-size: 14px;">' + newVisitsData + '% </span>';	
 	var labelNewVisits = labelTable.replace("{label}", newVisits + getLocallizedKey("com.rcs.googleanalytics.new.visitor")).replace("{color}", colors[0]);
 	
