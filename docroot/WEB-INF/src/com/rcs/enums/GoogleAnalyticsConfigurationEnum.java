@@ -9,7 +9,9 @@ public enum GoogleAnalyticsConfigurationEnum {
 	PROPERTY_ID("property_id"),
 	PROFILE_ID("profile_id"),
 	TOKEN("token"),
-	REFRESHTOKEN("refreshtoken");
+	REFRESHTOKEN("refreshtoken"),
+	CODE("code"),
+	REDIRECT_URL("redirect_url");
 	
 	private String key;
 
