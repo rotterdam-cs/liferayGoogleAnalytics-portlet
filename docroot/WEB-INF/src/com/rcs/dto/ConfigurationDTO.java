@@ -5,15 +5,25 @@ import java.io.Serializable;
 public class ConfigurationDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
+	// client_id and client_secret 
+	// are obtained during application 
+	// registration, from the APIs Console
 	private String client_id = null;
+	private String client_secret = null;
 	private String api_key = null;//@@TODO Not used?
 	private String account_id = null;
 	private String property_id = null;
 	private String profile_id = null;
 	private String token = null;
-	private String refreshtoken = null;
-	private String client_secret = null;
+	// The refresh token may be used 
+	// to obtain new access tokens at any time
+	// (because access tokens expire). 
+	// This type of access to a Google API 
+	// is called offline.
+	private String refreshtoken = null;	
 	private String authURL = null;
+	private String code = null; //@@TODO: should I delete this?
+	private String redirect_url = null;
 	private boolean isValidAccess;
 	
 	public ConfigurationDTO() {		
@@ -97,6 +107,22 @@ public class ConfigurationDTO implements Serializable {
 
 	public void setValidAccess(boolean isValidAccess) {
 		this.isValidAccess = isValidAccess;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getRedirect_url() {
+		return redirect_url;
+	}
+
+	public void setRedirect_url(String redirect_url) {
+		this.redirect_url = redirect_url;
 	}	
 	
 	
