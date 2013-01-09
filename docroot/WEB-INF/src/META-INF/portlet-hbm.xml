@@ -2,8 +2,8 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping default-lazy="false" auto-import="false">
-	<import class="com.rcs.service.model.Configuration" />
-	<class name="com.rcs.service.model.impl.ConfigurationImpl" table="GoogleAnalytics_Configuration">
+	<import class="com.rcs.configuration.model.Configuration" />
+	<class name="com.rcs.configuration.model.impl.ConfigurationImpl" table="configuration_Configuration">
 		<cache usage="read-write" />
 		<id name="configurationId" type="long">
 			<generator class="assigned" />
