@@ -14,6 +14,8 @@
 <portlet:defineObjects />
 <portlet:resourceURL var="adminSaveConfigurationsURL" id="adminSaveConfigurations" />
 <portlet:resourceURL var="adminSaveConfigurationURL" id="adminSaveConfiguration" />
+<portlet:resourceURL var="getGoogleAnalyticsDataURL" id="getGoogleAnalyticsData" />
+
 
 <div class="modal hide fade" id="<portlet:namespace/>helpWindow">
     <div class="modal-header">
@@ -63,9 +65,10 @@
 
 
 <form class="well" id="<portlet:namespace/>configurationform">
+	<input type="hidden" name="<portlet:namespace/>new_configuration" id="<portlet:namespace/>new_configuration" value="false" />
 	<h3><fmt:message key="com.rcs.googleanalytics.register.api.console"/> <a data-toggle="modal" href="#<portlet:namespace/>helpWindow"><i class="icon-question-sign"></i></a></h3>  
     <p>
-        <label for="<portlet:namespace/>client_id"><fmt:message key="com.rcs.googleanalytics.configuration.client.id"/>:</label>
+        <label for="<portlet:namespace/>client_id"><fmt:message key="com.rcs.googleanalytics.configuration.client.id"/>: </label>
         <input type="text" name="<portlet:namespace/>client_id" class="required span6" id="<portlet:namespace/>client_id" value="${configuration.client_id}" />
     </p>
     <p>
@@ -116,6 +119,7 @@
 	function queryAccountsConfiguration(googleAnalyticsAccountsJSON){
 		clearSelectOption("<portlet:namespace/>account_id");
 		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
+		console.log(googleAnalyticsAccountsJSON);		
 		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
             setSelectOption("<portlet:namespace/>account_id", value.value, value.html);
             if (value.selected == true) {
@@ -124,7 +128,10 @@
 			}
         });
 	}
-	function queryWebpropertiesConfiguration(googleAnalyticsAccountsJSON, accountId){
+	function queryWebpropertiesConfiguration(googleAnalyticsAccountsJSON, accountId){		
+		if(googleAnalyticsAccountsJSON == null) {
+			showError("Error retrieving Google Analytics Data, please refresh the page.");
+		}
 		clearSelectOption("<portlet:namespace/>property_id");
 		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
 		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
@@ -171,14 +178,18 @@
     jQuery(function() {
     	<c:if test="${googleAnalyticsAccountsJSON != null && googleAnalyticsAccountsJSON != ''}" >
     	   var googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
-    	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);
+    	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);      	       	   
     	</c:if>
+    	
     	<c:if test="${authURL != null && authURL != ''}" >
     		jQuery("#<portlet:namespace/>authorize-button").show();
     		jQuery("#<portlet:namespace/>save-configuration").hide();
     		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();    		
     	</c:if>
-    	<c:if test="${errorMessage != null && errorMessage != ''}" >showError('${errorMessage}');</c:if>
+    	<c:if test="${errorMessage != null && errorMessage != ''}" >
+    		showError('${errorMessage}');
+    		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();
+    	</c:if>
     	<c:if test="${infoMessage != null && infoMessage != ''}" >showInfo('${infoMessage}');</c:if>
     	
         <%--//Handle SAVE Response--%>
@@ -193,10 +204,29 @@
                 jQuery("#<portlet:namespace/>save-configuration").attr("disabled", true);
                 var responseBodyObj = jQuery.parseJSON(response[2]);
                 authUrl = responseBodyObj.authURL;
-                if (responseBodyObj.isValidAccess) {
-                	jQuery("#<portlet:namespace/>authorize-button").hide();
-            		jQuery("#<portlet:namespace/>save-configuration").show();
-            		jQuery("#<portlet:namespace/>detailedconfigurationform").show();
+                if (responseBodyObj.isValidAccess) {                	                	               
+                	if(jQuery("#<portlet:namespace/>account_id").length == 1) {
+                		jQuery.ajax({
+	            			url: "${getGoogleAnalyticsDataURL}"	            			
+	            			,success: function(data) {
+	            				var response = getResponseTextInfo(data);
+	            				console.log(response);
+	            				if (!response[0]) {
+	            	            	showError(response[1]);
+	            	            	jQuery("#<portlet:namespace/>authorize-button").show();
+	                        		jQuery("#<portlet:namespace/>save-configuration").hide();
+	                        		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();
+	            	            } else {	            	            	
+	            	            	var googleAnalyticsAccountsJSON = jQuery.parseJSON(response[2]);
+	            	            	queryAccountsConfiguration(googleAnalyticsAccountsJSON);
+	            	            	jQuery("#<portlet:namespace/>authorize-button").hide();
+		                    		jQuery("#<portlet:namespace/>save-configuration").show();
+		                    		jQuery("#<portlet:namespace/>detailedconfigurationform").show();
+	            	            }
+	            				
+	            			}
+                		});
+                	}                	                
                 } else {
                 	jQuery("#<portlet:namespace/>authorize-button").show();
             		jQuery("#<portlet:namespace/>save-configuration").hide();
@@ -221,22 +251,22 @@
         jQuery(document).on("keypress", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false); 
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>authorize-button").hide();            
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>authorize-button").hide();            
         });
         jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>authorize-button").hide();            
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>authorize-button").hide();            
         });
         
         <%--//Form Options for Save Button --%>
@@ -283,9 +313,13 @@
        	});
         
         <%--//Configuration Form Button Listener --%>
-        jQuery("#<portlet:namespace/>save-configuration").click(function() {
+        jQuery("#<portlet:namespace/>save-configuration").click(function() {        	
             if(jQuery('#<portlet:namespace/>configurationform').valid()) {
+            	jQuery("#<portlet:namespace/>new_configuration").val("true");
                 jQuery("#<portlet:namespace/>administration-container-mask").mask('<fmt:message key="com.rcs.general.mask.loading.text"/>');
+                clearSelectOption("<portlet:namespace/>account_id");
+                clearSelectOption("<portlet:namespace/>property_id");
+                clearSelectOption("<portlet:namespace/>profile_id");                
                 jQuery('#<portlet:namespace/>configurationform').ajaxSubmit(optionsSave);
             }
         });
@@ -293,6 +327,7 @@
         <%--//Detailed Configuration Form Button Listener --%>
         jQuery("#<portlet:namespace/>save-detailed-configuration").click(function() {
             if(jQuery('#<portlet:namespace/>detailedconfigurationform').valid()) {
+            	jQuery("#<portlet:namespace/>new_configuration").val("false");
                 jQuery("#<portlet:namespace/>administration-container-mask").mask('<fmt:message key="com.rcs.general.mask.loading.text"/>');
                 jQuery('#<portlet:namespace/>detailedconfigurationform').ajaxSubmit(detailedOptionsSave);
             }
