@@ -7,7 +7,7 @@
 			<access>PROPERTY</access>
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
-	<mapped-superclass class="com.rcs.service.model.impl.ConfigurationModelImpl">
+	<mapped-superclass class="com.rcs.configuration.model.impl.ConfigurationModelImpl">
 		<attributes>
 			<id name="configurationId" />
 			<basic name="groupId" />
@@ -22,13 +22,14 @@
 			</basic>
 			<basic name="propertyname" />
 			<basic name="propertyvalue" />
+			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
 			<transient name="userUuid" />
 		</attributes>
 	</mapped-superclass>
-	<entity class="com.rcs.service.model.impl.ConfigurationImpl" name="Configuration">
-		<table name="GoogleAnalytics_Configuration" />
+	<entity class="com.rcs.configuration.model.impl.ConfigurationImpl" name="Configuration">
+		<table name="configuration_Configuration" />
 		<attributes />
 	</entity>
 </entity-mappings>
