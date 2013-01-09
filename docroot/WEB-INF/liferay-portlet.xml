@@ -3,7 +3,39 @@
 
 <liferay-portlet-app>
 	<portlet>
-		<portlet-name>liferayGoogleAnalytics</portlet-name>
+		<portlet-name>google-analytics</portlet-name>
+		<icon>/google-analytics-icon.png</icon>
+		<instanceable>false</instanceable>
+		<header-portlet-css>/js/jquery-validation-1.9.0/demo/css/screen.css</header-portlet-css>
+		<header-portlet-css>/js/bootstrap/css/bootstrap.css</header-portlet-css>
+        <header-portlet-css>/js/bootstrap/css/bootstrap-responsive.css</header-portlet-css>
+        <header-portlet-css>/js/jquery-loadmask/jquery.loadmask.css</header-portlet-css>
+        <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>        
+        <header-portlet-css>/js/google_analytics/analytics_dashboard.css</header-portlet-css>
+        <header-portlet-css>/js/rangeDatePicker/css/datepicker/base.css</header-portlet-css>
+        <header-portlet-css>/js/rangeDatePicker/css/datepicker/clean.css</header-portlet-css>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		
+		<header-portlet-javascript>/js/jquery/jquery-1.7.1.min.js</header-portlet-javascript>
+		<header-portlet-javascript>/js/bootstrap/js/bootstrap.js</header-portlet-javascript>
+        <header-portlet-javascript>/js/jquery-loadmask/jquery.loadmask.min.js</header-portlet-javascript>        
+        
+        <footer-portlet-javascript>/js/google_analytics/date.js</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/google_analytics/jquery.flot.min.js</footer-portlet-javascript>        
+        <footer-portlet-javascript>/js/jquery-validation-1.9.0/jquery.validate.min.js</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/jquery-validation-1.9.0/localization/messageslocale.jsp</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/jquery.form/jquery.form.js</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/responseHandler.js</footer-portlet-javascript>
+        <footer-portlet-javascript>/js/fancyapps-fancyBox/source/jquery.fancybox.pack.js</footer-portlet-javascript> 
+	    <footer-portlet-javascript>/js/jquery.json-2.3/jquery.json-2.3.min.js</footer-portlet-javascript>
+	    <footer-portlet-javascript>/js/google_analytics/analyticsChartDataEncoder.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/google_analytics/chartGraphicator.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/rangeDatePicker/js/datepicker.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>		
+		<css-class-wrapper>google-analytics-portlet</css-class-wrapper>
+	</portlet>
+	<portlet>
+		<portlet-name>ga-configuration</portlet-name>
 		<icon>/google-analytics-icon.png</icon>
 		<control-panel-entry-category>content</control-panel-entry-category>            
         <control-panel-entry-weight>1</control-panel-entry-weight>
@@ -34,7 +66,7 @@
 		<footer-portlet-javascript>/js/google_analytics/chartGraphicator.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/rangeDatePicker/js/datepicker.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
-		<css-class-wrapper>liferayGoogleAnalytics-portlet</css-class-wrapper>
+		<css-class-wrapper>ga-configuration-portlet</css-class-wrapper>
 	</portlet>
 	<role-mapper>
 		<role-name>administrator</role-name>
