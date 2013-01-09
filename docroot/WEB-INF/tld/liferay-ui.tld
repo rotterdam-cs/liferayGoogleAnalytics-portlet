@@ -325,6 +325,21 @@
 		</attribute>
 	</tag>
 	<tag>
+		<name>categorization-filter</name>
+		<tag-class>com.liferay.taglib.ui.CategorizationFilterTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>assetType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>portletURL</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
 		<name>custom-attribute</name>
 		<tag-class>com.liferay.taglib.ui.CustomAttributeTag</tag-class>
 		<body-content>JSP</body-content>
@@ -795,6 +810,11 @@
 		<tag-class>com.liferay.taglib.ui.IconTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<name>alt</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>cssClass</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -896,6 +916,11 @@
 		</attribute>
 		<attribute>
 			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>message</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -1195,6 +1220,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>resizable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>skipEditorLoading</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1260,6 +1290,16 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>ignoreRequestValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>languageId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1300,7 +1340,22 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>ignoreRequestValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>languageId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>maxLength</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -1822,6 +1877,11 @@
 		</attribute>
 		<attribute>
 			<name>formName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>id</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
@@ -2400,6 +2460,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>rowIdProperty</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>rowVar</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -2479,6 +2544,11 @@
 		<name>search-paginator</name>
 		<tag-class>com.liferay.taglib.ui.SearchPaginatorTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>searchContainer</name>
 			<required>true</required>
