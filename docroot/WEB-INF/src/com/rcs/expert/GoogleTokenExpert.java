@@ -10,9 +10,11 @@ import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.analytics.AnalyticsScopes;
@@ -56,7 +58,7 @@ public class GoogleTokenExpert {
     		,String refreshToken
     		,String authorizationCode
     		,String redirect_url
-    ){    	
+    ) throws TokenResponseException, IOException, Exception {    	
     	GoogleClientSecrets mSecrets;
         HttpTransport mTransport;
         JsonFactory mJsonFactory;    	
@@ -70,11 +72,11 @@ public class GoogleTokenExpert {
         secretDetails.setClientSecret(CLENT_SECRET);
 
         mSecrets = new GoogleClientSecrets();
-        mSecrets.setInstalled(secretDetails);
-
+        mSecrets.setInstalled(secretDetails);       
+        
         mTransport = new ApacheHttpTransport();
-        mJsonFactory = new JacksonFactory();
-
+        mJsonFactory = new JacksonFactory();       
+        
         flow = new GoogleAuthorizationCodeFlow.Builder(
                         mTransport,
                         mJsonFactory,
@@ -84,56 +86,55 @@ public class GoogleTokenExpert {
                 
         // try to refresh credentials based on the refresh token
         if (refreshToken != null && !refreshToken.isEmpty()) {
-	        try {
-	        	log.error("try to refresh credentials based on the refresh token");
+	        try {	        	
 	        	GoogleTokenResponse restoredResponse = new GoogleTokenResponse();
 	        	restoredResponse.setRefreshToken(refreshToken);
 		        credential = flow.createAndStoreCredential(restoredResponse, null);
 		        
 	            if (credential.refreshToken()) {
-	            	log.error("refresh token succeed access token: " + credential.getAccessToken());
+	            	log.info("refresh token succeed access token ");
 	            } else {
-	                log.error("Could not refresh token.");
+	                log.info("Could not refresh token.");
 	            }
     	    } catch (TokenResponseException e) {
-    	    	credential = null;
-    	      if (e.getDetails() != null) {
-    	    	  log.error("Error: " + e.getDetails().getError());
-    	        if (e.getDetails().getErrorDescription() != null) {
-    	        	log.error(e.getDetails().getErrorDescription());
-    	        }
-    	        if (e.getDetails().getErrorUri() != null) {
-    	        	log.error(e.getDetails().getErrorUri());
-    	        }
-    	      } else {
-    	    	  log.error(e.getMessage());
-    	      }    	    
-	            
+    	    	log.debug("TokenResponseException in GoogleTokenExpert in getToken nr 1");    	    	    	    	
+    	    	if(e.getDetails()!=null && e.getDetails().getError().equals("unauthorized_client")) {
+    	    		log.debug("unauthorized_client");
+    	    		credential = null;
+    	    	} else {
+    	    		throw e;
+    	    	}   	    	    	    
 	        } catch (IOException e) {
-	                e.printStackTrace();
-	                log.error("Error");
+	        	log.debug("IOException in GoogleTokenExpert in getToken");
+                e.printStackTrace();
+                throw e;
+	        } catch (Exception e) {
+	        	log.debug("Exception in GoogleTokenExpert in getToken");
+                e.printStackTrace();
+                throw e;
 	        }
         }         
         
         // finally try to ask user to grant access
         if (credential == null) {
         	if (authorizationCode != null && !authorizationCode.isEmpty() && redirect_url != null && !redirect_url.isEmpty()){
-        		log.error("try to ask user to grant access");
-	        	try {	
-	        		log.error("authorizationCode:" + authorizationCode);
-	        		log.error("redirect_url:" + redirect_url);
+        		log.info("try to ask user to grant access");
+	        	try {		        		
 	            	GoogleTokenResponse tokenResponse = flow.newTokenRequest(authorizationCode).setRedirectUri(redirect_url).execute();
-	                credential = flow.createAndStoreCredential(tokenResponse, null);
-	                log.error("Access token: " + tokenResponse.getAccessToken());
-	    	        log.error("Refresh token: " + tokenResponse.getRefreshToken());
-	    	        log.error("expiresIn: " + tokenResponse.getExpiresInSeconds());	    	        
+	                credential = flow.createAndStoreCredential(tokenResponse, null);	                	    	       
+	            } catch (TokenResponseException e) {                    
+                    log.info("TokenResponseException in GoogleTokenExpert in getToken nr 2");
+                    e.printStackTrace();
+                    throw e;
 	            } catch (Exception e) {
                     e.printStackTrace();
+                    throw e;
 	            }
         	} else {
         		log.error("Invalid Authorization Code");
         	}
         }
         return credential;
-    }
+    }        
+    		
 }
