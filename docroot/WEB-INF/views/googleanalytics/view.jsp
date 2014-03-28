@@ -30,25 +30,20 @@
 </div>
 
 <script type="text/javascript">
-		
-    Liferay.on('portletReady', function(event) {            
+    Liferay.on('portletReady', function(event) {
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
+        	console.log("test if");
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
          	<c:if test="${messages != ''}" >messages = ${messages};</c:if>
          	namespace = '<portlet:namespace/>';
-            <%--//Load the first section (Account)--%>
-            jQuery(function () {
-                jQuery('a[data-toggle="tab"]:first').tab('show');
-            });
             
             <%--//Actions to perform when change section --%>
             jQuery('a[data-toggle="tab"]').on('shown', function () {
                 jQuery("#<portlet:namespace/>administration-container-mask").mask('<fmt:message key="com.rcs.general.mask.loading.text"/>');
                 jQuery(".alert").hide();
-                var link = jQuery(this).attr("href").replace("#","");                
+                var link = jQuery(this).attr("href").replace("#","");  
                 jQuery(".toHide").addClass("hidden");
                 jQuery("#<portlet:namespace/>" + jQuery(this).attr("rel")).addClass("toHide").removeClass("hidden");                              
-                
                 jQuery("#<portlet:namespace/>administration-container").load("${adminSectionsURL}"
                     ,{
                         "section" : link
@@ -59,6 +54,12 @@
                 );
             });            
             
+            <%--//Load the first section (Account)--%>
+            setTimeout(function() {
+            	jQuery(function () {
+                    jQuery('a[data-toggle="tab"]:first').tab('show');
+                });
+            }, 200);
         }
     });
 </script>

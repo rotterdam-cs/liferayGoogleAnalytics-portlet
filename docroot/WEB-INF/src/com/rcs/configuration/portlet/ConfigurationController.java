@@ -107,7 +107,7 @@ public class ConfigurationController {
 		modelAttrs.put("configuration", configurationDTO);		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);	    
-		return new ModelAndView("/WEB-INF/views/googleanalytics/view.jsp", modelAttrs);
+		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
 	
 	/**
@@ -204,7 +204,7 @@ public class ConfigurationController {
     ) {		
 	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();	
         modelAttrs.put("configuration", configurationDTO);
-        
+       
         //Account
         if (section.equals(ADMIN_SECTION_CONFIGURATION)) {        	
         	modelAttrs = googleAnalyticsDataExpert.getGoogleAnalyticsAccountData(configurationDTO, pII, locale, modelAttrs);        	
@@ -216,7 +216,7 @@ public class ConfigurationController {
 				log.info("MalformedURLException: ", ignored);
 			}
         	modelAttrs.put("serverURL", "http://"+url.getHost());
-        
+        	log.info("section: "+url.getHost());
         	//Analytics
         } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {
         	//Default Date Range
@@ -244,7 +244,7 @@ public class ConfigurationController {
         		} catch(SocketTimeoutException e) {
         			String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.socket.timeout", locale);
                     modelAttrs.put("errorMessage", message);
-                    return new ModelAndView("/WEB-INF/views/googleanalytics/top_messages.jsp", modelAttrs);
+                    return new ModelAndView("googleanalytics/top_messages", modelAttrs);
         		}	        	
 	        	Gson gson = new Gson();
 		        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
@@ -253,10 +253,10 @@ public class ConfigurationController {
         	} else {
         		String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.error.graphics.profile.not.selected", locale);
                 modelAttrs.put("errorMessage", message);
-                return new ModelAndView("/WEB-INF/views/googleanalytics/top_messages.jsp", modelAttrs);
+                return new ModelAndView("googleanalytics/top_messages", modelAttrs);
         	}
         } 
-        return new ModelAndView("/WEB-INF/views/googleanalytics/" + section + ".jsp", modelAttrs);       
+        return new ModelAndView("googleanalytics/" + section, modelAttrs);       
     }
 	
 	/**

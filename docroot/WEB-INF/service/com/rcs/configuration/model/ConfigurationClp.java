@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,16 +16,18 @@ package com.rcs.configuration.model;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
 
+import com.rcs.configuration.service.ClpSerializer;
 import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Proxy;
+import java.lang.reflect.Method;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -39,26 +41,32 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 	public ConfigurationClp() {
 	}
 
+	@Override
 	public Class<?> getModelClass() {
 		return Configuration.class;
 	}
 
+	@Override
 	public String getModelClassName() {
 		return Configuration.class.getName();
 	}
 
+	@Override
 	public long getPrimaryKey() {
 		return _configurationId;
 	}
 
+	@Override
 	public void setPrimaryKey(long primaryKey) {
 		setConfigurationId(primaryKey);
 	}
 
+	@Override
 	public Serializable getPrimaryKeyObj() {
-		return new Long(_configurationId);
+		return _configurationId;
 	}
 
+	@Override
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
@@ -137,84 +145,221 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 		}
 	}
 
+	@Override
 	public long getConfigurationId() {
 		return _configurationId;
 	}
 
+	@Override
 	public void setConfigurationId(long configurationId) {
 		_configurationId = configurationId;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setConfigurationId", long.class);
+
+				method.invoke(_configurationRemoteModel, configurationId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public long getGroupId() {
 		return _groupId;
 	}
 
+	@Override
 	public void setGroupId(long groupId) {
 		_groupId = groupId;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setGroupId", long.class);
+
+				method.invoke(_configurationRemoteModel, groupId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public long getCompanyId() {
 		return _companyId;
 	}
 
+	@Override
 	public void setCompanyId(long companyId) {
 		_companyId = companyId;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setCompanyId", long.class);
+
+				method.invoke(_configurationRemoteModel, companyId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public long getUserId() {
 		return _userId;
 	}
 
+	@Override
 	public void setUserId(long userId) {
 		_userId = userId;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setUserId", long.class);
+
+				method.invoke(_configurationRemoteModel, userId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public String getUserUuid() throws SystemException {
 		return PortalUtil.getUserValue(getUserId(), "uuid", _userUuid);
 	}
 
+	@Override
 	public void setUserUuid(String userUuid) {
 		_userUuid = userUuid;
 	}
 
+	@Override
 	public String getUserName() {
 		return _userName;
 	}
 
+	@Override
 	public void setUserName(String userName) {
 		_userName = userName;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setUserName", String.class);
+
+				method.invoke(_configurationRemoteModel, userName);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public Date getCreateDate() {
 		return _createDate;
 	}
 
+	@Override
 	public void setCreateDate(Date createDate) {
 		_createDate = createDate;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setCreateDate", Date.class);
+
+				method.invoke(_configurationRemoteModel, createDate);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public Date getModifiedDate() {
 		return _modifiedDate;
 	}
 
+	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_modifiedDate = modifiedDate;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setModifiedDate", Date.class);
+
+				method.invoke(_configurationRemoteModel, modifiedDate);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public String getPropertyname() {
 		return _propertyname;
 	}
 
+	@Override
 	public void setPropertyname(String propertyname) {
 		_propertyname = propertyname;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setPropertyname", String.class);
+
+				method.invoke(_configurationRemoteModel, propertyname);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
+	@Override
 	public String getPropertyvalue() {
 		return _propertyvalue;
 	}
 
+	@Override
 	public void setPropertyvalue(String propertyvalue) {
 		_propertyvalue = propertyvalue;
+
+		if (_configurationRemoteModel != null) {
+			try {
+				Class<?> clazz = _configurationRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setPropertyvalue", String.class);
+
+				method.invoke(_configurationRemoteModel, propertyvalue);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
 	}
 
 	public BaseModel<?> getConfigurationRemoteModel() {
@@ -226,6 +371,48 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 		_configurationRemoteModel = configurationRemoteModel;
 	}
 
+	public Object invokeOnRemoteModel(String methodName,
+		Class<?>[] parameterTypes, Object[] parameterValues)
+		throws Exception {
+		Object[] remoteParameterValues = new Object[parameterValues.length];
+
+		for (int i = 0; i < parameterValues.length; i++) {
+			if (parameterValues[i] != null) {
+				remoteParameterValues[i] = ClpSerializer.translateInput(parameterValues[i]);
+			}
+		}
+
+		Class<?> remoteModelClass = _configurationRemoteModel.getClass();
+
+		ClassLoader remoteModelClassLoader = remoteModelClass.getClassLoader();
+
+		Class<?>[] remoteParameterTypes = new Class[parameterTypes.length];
+
+		for (int i = 0; i < parameterTypes.length; i++) {
+			if (parameterTypes[i].isPrimitive()) {
+				remoteParameterTypes[i] = parameterTypes[i];
+			}
+			else {
+				String parameterTypeName = parameterTypes[i].getName();
+
+				remoteParameterTypes[i] = remoteModelClassLoader.loadClass(parameterTypeName);
+			}
+		}
+
+		Method method = remoteModelClass.getMethod(methodName,
+				remoteParameterTypes);
+
+		Object returnValue = method.invoke(_configurationRemoteModel,
+				remoteParameterValues);
+
+		if (returnValue != null) {
+			returnValue = ClpSerializer.translateOutput(returnValue);
+		}
+
+		return returnValue;
+	}
+
+	@Override
 	public void persist() throws SystemException {
 		if (this.isNew()) {
 			ConfigurationLocalServiceUtil.addConfiguration(this);
@@ -237,7 +424,7 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 
 	@Override
 	public Configuration toEscapedModel() {
-		return (Configuration)Proxy.newProxyInstance(Configuration.class.getClassLoader(),
+		return (Configuration)ProxyUtil.newProxyInstance(Configuration.class.getClassLoader(),
 			new Class[] { Configuration.class }, new AutoEscapeBeanHandler(this));
 	}
 
@@ -258,6 +445,7 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 		return clone;
 	}
 
+	@Override
 	public int compareTo(Configuration configuration) {
 		int value = 0;
 
@@ -280,18 +468,15 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof ConfigurationClp)) {
 			return false;
 		}
 
-		ConfigurationClp configuration = null;
-
-		try {
-			configuration = (ConfigurationClp)obj;
-		}
-		catch (ClassCastException cce) {
-			return false;
-		}
+		ConfigurationClp configuration = (ConfigurationClp)obj;
 
 		long primaryKey = configuration.getPrimaryKey();
 
@@ -335,6 +520,7 @@ public class ConfigurationClp extends BaseModelImpl<Configuration>
 		return sb.toString();
 	}
 
+	@Override
 	public String toXmlString() {
 		StringBundler sb = new StringBundler(31);
 

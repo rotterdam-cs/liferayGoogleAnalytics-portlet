@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -90,32 +90,39 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 	public static long COMPANYID_COLUMN_BITMASK = 1L;
 	public static long GROUPID_COLUMN_BITMASK = 2L;
 	public static long PROPERTYNAME_COLUMN_BITMASK = 4L;
+	public static long CONFIGURATIONID_COLUMN_BITMASK = 8L;
 	public static final long LOCK_EXPIRATION_TIME = GetterUtil.getLong(com.liferay.util.service.ServiceProps.get(
 				"lock.expiration.time.com.rcs.configuration.model.Configuration"));
 
 	public ConfigurationModelImpl() {
 	}
 
+	@Override
 	public long getPrimaryKey() {
 		return _configurationId;
 	}
 
+	@Override
 	public void setPrimaryKey(long primaryKey) {
 		setConfigurationId(primaryKey);
 	}
 
+	@Override
 	public Serializable getPrimaryKeyObj() {
-		return new Long(_configurationId);
+		return _configurationId;
 	}
 
+	@Override
 	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
 		setPrimaryKey(((Long)primaryKeyObj).longValue());
 	}
 
+	@Override
 	public Class<?> getModelClass() {
 		return Configuration.class;
 	}
 
+	@Override
 	public String getModelClassName() {
 		return Configuration.class.getName();
 	}
@@ -194,20 +201,24 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		}
 	}
 
+	@Override
 	public long getConfigurationId() {
 		return _configurationId;
 	}
 
+	@Override
 	public void setConfigurationId(long configurationId) {
 		_columnBitmask = -1L;
 
 		_configurationId = configurationId;
 	}
 
+	@Override
 	public long getGroupId() {
 		return _groupId;
 	}
 
+	@Override
 	public void setGroupId(long groupId) {
 		_columnBitmask |= GROUPID_COLUMN_BITMASK;
 
@@ -224,10 +235,12 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		return _originalGroupId;
 	}
 
+	@Override
 	public long getCompanyId() {
 		return _companyId;
 	}
 
+	@Override
 	public void setCompanyId(long companyId) {
 		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
 
@@ -244,22 +257,27 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		return _originalCompanyId;
 	}
 
+	@Override
 	public long getUserId() {
 		return _userId;
 	}
 
+	@Override
 	public void setUserId(long userId) {
 		_userId = userId;
 	}
 
+	@Override
 	public String getUserUuid() throws SystemException {
 		return PortalUtil.getUserValue(getUserId(), "uuid", _userUuid);
 	}
 
+	@Override
 	public void setUserUuid(String userUuid) {
 		_userUuid = userUuid;
 	}
 
+	@Override
 	public String getUserName() {
 		if (_userName == null) {
 			return StringPool.BLANK;
@@ -269,26 +287,32 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		}
 	}
 
+	@Override
 	public void setUserName(String userName) {
 		_userName = userName;
 	}
 
+	@Override
 	public Date getCreateDate() {
 		return _createDate;
 	}
 
+	@Override
 	public void setCreateDate(Date createDate) {
 		_createDate = createDate;
 	}
 
+	@Override
 	public Date getModifiedDate() {
 		return _modifiedDate;
 	}
 
+	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_modifiedDate = modifiedDate;
 	}
 
+	@Override
 	public String getPropertyname() {
 		if (_propertyname == null) {
 			return StringPool.BLANK;
@@ -298,6 +322,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		}
 	}
 
+	@Override
 	public void setPropertyname(String propertyname) {
 		_columnBitmask |= PROPERTYNAME_COLUMN_BITMASK;
 
@@ -312,6 +337,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		return GetterUtil.getString(_originalPropertyname);
 	}
 
+	@Override
 	public String getPropertyvalue() {
 		if (_propertyvalue == null) {
 			return StringPool.BLANK;
@@ -321,6 +347,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		}
 	}
 
+	@Override
 	public void setPropertyvalue(String propertyvalue) {
 		_propertyvalue = propertyvalue;
 	}
@@ -344,13 +371,12 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 
 	@Override
 	public Configuration toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Configuration)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
+		if (_escapedModel == null) {
+			_escapedModel = (Configuration)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
 		}
 
-		return _escapedModelProxy;
+		return _escapedModel;
 	}
 
 	@Override
@@ -372,6 +398,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		return configurationImpl;
 	}
 
+	@Override
 	public int compareTo(Configuration configuration) {
 		int value = 0;
 
@@ -394,18 +421,15 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof Configuration)) {
 			return false;
 		}
 
-		Configuration configuration = null;
-
-		try {
-			configuration = (Configuration)obj;
-		}
-		catch (ClassCastException cce) {
-			return false;
-		}
+		Configuration configuration = (Configuration)obj;
 
 		long primaryKey = configuration.getPrimaryKey();
 
@@ -523,6 +547,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 		return sb.toString();
 	}
 
+	@Override
 	public String toXmlString() {
 		StringBundler sb = new StringBundler(31);
 
@@ -573,7 +598,7 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 	}
 
 	private static ClassLoader _classLoader = Configuration.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Configuration.class
 		};
 	private long _configurationId;
@@ -592,5 +617,5 @@ public class ConfigurationModelImpl extends BaseModelImpl<Configuration>
 	private String _originalPropertyname;
 	private String _propertyvalue;
 	private long _columnBitmask;
-	private Configuration _escapedModelProxy;
+	private Configuration _escapedModel;
 }

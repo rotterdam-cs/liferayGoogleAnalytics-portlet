@@ -13,7 +13,7 @@
 <portlet:resourceURL var="getAnalyticsDataURL" id="getAnalyticsData" />
 <portlet:defineObjects />
 
-<div class="modal hide fade" id="<portlet:namespace/>helpWindow">
+<div class="modal fade" id="<portlet:namespace/>helpWindow">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
         <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.view.reports"/> <span style="float: right;"></span></h3>
@@ -86,7 +86,7 @@
 		<table border="0" class="center-table">
 			<tr>
 				<td colspan="2" style="text-align:center;" class="pieTitle"><fmt:message key="com.rcs.googleanalytics.graphic.type.of.visitors"/></td>
-				<td><span class="separator"> </span></td>
+				<td><span class="separator_report"> </span></td>
 				<td colspan="2" style="text-align:center;" class="pieTitle"><fmt:message key="com.rcs.googleanalytics.graphic.traffic.sources"/></td>
 			</tr>
 			<tr>
@@ -94,7 +94,7 @@
 				<td>
 					<span id="visitsPieTxt"><span class="textconatiner" ></span></span>
 				</td>
-				<td><span class="separator"> </span></td>				
+				<td><span class="separator_report"> </span></td>				
 				<td><span id="sourcesPieImg"><span class="imgconatiner" ></span></span></td>
 				<td>
 					<span id="sourcesPieTxt"><span class="textconatiner" ></span></span>

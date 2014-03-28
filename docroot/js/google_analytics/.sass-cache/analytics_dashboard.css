@@ -44,7 +44,7 @@ td.legendLabel {
   margin: 0; }
 
 .statistic .not_configured p {
-  margin: 0 0 .5em 0; }
+  margin: 0 0 0.5em 0; }
 
 .statistic .primary_value {
   font-weight: bold;
@@ -54,7 +54,7 @@ td.legendLabel {
 .statistic .primary_value .item_name {
   font-size: 67%;
   font-weight: normal;
-  color: #666; }
+  color: #666666; }
 
 .statistic .primary_value .item_value {
   font-size: 70%; }
@@ -73,7 +73,7 @@ td.legendLabel {
 .statistic .date_comparison {
   margin: 0;
   font-size: 100%;
-  color: #666; }
+  color: #666666; }
 
 .statistic .date_comparison.segment {
   margin-bottom: .5em;
@@ -112,7 +112,7 @@ td.legendLabel {
 
 .sparkline .statistic {
   margin-left: 90px;
-  padding: .3em 0 0 0; }
+  padding: 0.3em 0 0 0; }
 
 .sparkline {
   margin: 0 0 1em; }
@@ -124,7 +124,7 @@ td.legendLabel {
 
 .sparkline .statistic {
   margin-left: 90px;
-  padding: .3em 0 0 0; }
+  padding: 0.3em 0 0 0; }
 
 .visualization .f_sparkline_inner {
   padding: 5px 2px 2px 2px; }

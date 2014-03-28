@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -14,8 +14,6 @@
 
 package com.rcs.configuration.service.persistence;
 
-import com.liferay.portal.NoSuchModelException;
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
@@ -35,12 +33,10 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
-import com.liferay.portal.service.persistence.ResourcePersistence;
-import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import com.rcs.configuration.NoSuchConfigurationException;
@@ -78,6 +74,17 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 		".List1";
 	public static final String FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION = FINDER_CLASS_NAME_ENTITY +
 		".List2";
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
+			ConfigurationImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			"findAll", new String[0]);
+	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
+			ConfigurationImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"findAll", new String[0]);
+	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+			ConfigurationModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll", new String[0]);
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID =
 		new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
 			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
@@ -87,8 +94,8 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 				String.class.getName(), Long.class.getName(),
 				Long.class.getName(),
 				
-			"java.lang.Integer", "java.lang.Integer",
-				"com.liferay.portal.kernel.util.OrderByComparator"
+			Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
 			});
 	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID =
 		new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
@@ -111,6 +118,608 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 				String.class.getName(), Long.class.getName(),
 				Long.class.getName()
 			});
+
+	/**
+	 * Returns all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @return the matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertynameGroupIdCompanyId(
+		String propertyname, long groupId, long companyId)
+		throws SystemException {
+		return findByPropertynameGroupIdCompanyId(propertyname, groupId,
+			companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of configurations
+	 * @param end the upper bound of the range of configurations (not inclusive)
+	 * @return the range of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertynameGroupIdCompanyId(
+		String propertyname, long groupId, long companyId, int start, int end)
+		throws SystemException {
+		return findByPropertynameGroupIdCompanyId(propertyname, groupId,
+			companyId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of configurations
+	 * @param end the upper bound of the range of configurations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertynameGroupIdCompanyId(
+		String propertyname, long groupId, long companyId, int start, int end,
+		OrderByComparator orderByComparator) throws SystemException {
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID;
+			finderArgs = new Object[] { propertyname, groupId, companyId };
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID;
+			finderArgs = new Object[] {
+					propertyname, groupId, companyId,
+					
+					start, end, orderByComparator
+				};
+		}
+
+		List<Configuration> list = (List<Configuration>)FinderCacheUtil.getResult(finderPath,
+				finderArgs, this);
+
+		if ((list != null) && !list.isEmpty()) {
+			for (Configuration configuration : list) {
+				if (!Validator.equals(propertyname,
+							configuration.getPropertyname()) ||
+						(groupId != configuration.getGroupId()) ||
+						(companyId != configuration.getCompanyId())) {
+					list = null;
+
+					break;
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(5 +
+						(orderByComparator.getOrderByFields().length * 3));
+			}
+			else {
+				query = new StringBundler(5);
+			}
+
+			query.append(_SQL_SELECT_CONFIGURATION_WHERE);
+
+			boolean bindPropertyname = false;
+
+			if (propertyname == null) {
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
+			}
+			else if (propertyname.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
+			}
+			else {
+				bindPropertyname = true;
+
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
+			}
+
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
+
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else
+			 if (pagination) {
+				query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindPropertyname) {
+					qPos.add(propertyname);
+				}
+
+				qPos.add(groupId);
+
+				qPos.add(companyId);
+
+				if (!pagination) {
+					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
+							start, end, false);
+
+					Collections.sort(list);
+
+					list = new UnmodifiableList<Configuration>(list);
+				}
+				else {
+					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
+							start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration findByPropertynameGroupIdCompanyId_First(
+		String propertyname, long groupId, long companyId,
+		OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = fetchByPropertynameGroupIdCompanyId_First(propertyname,
+				groupId, companyId, orderByComparator);
+
+		if (configuration != null) {
+			return configuration;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("propertyname=");
+		msg.append(propertyname);
+
+		msg.append(", groupId=");
+		msg.append(groupId);
+
+		msg.append(", companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchConfigurationException(msg.toString());
+	}
+
+	/**
+	 * Returns the first configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching configuration, or <code>null</code> if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration fetchByPropertynameGroupIdCompanyId_First(
+		String propertyname, long groupId, long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
+		List<Configuration> list = findByPropertynameGroupIdCompanyId(propertyname,
+				groupId, companyId, 0, 1, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration findByPropertynameGroupIdCompanyId_Last(
+		String propertyname, long groupId, long companyId,
+		OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = fetchByPropertynameGroupIdCompanyId_Last(propertyname,
+				groupId, companyId, orderByComparator);
+
+		if (configuration != null) {
+			return configuration;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("propertyname=");
+		msg.append(propertyname);
+
+		msg.append(", groupId=");
+		msg.append(groupId);
+
+		msg.append(", companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchConfigurationException(msg.toString());
+	}
+
+	/**
+	 * Returns the last configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching configuration, or <code>null</code> if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration fetchByPropertynameGroupIdCompanyId_Last(
+		String propertyname, long groupId, long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
+		int count = countByPropertynameGroupIdCompanyId(propertyname, groupId,
+				companyId);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<Configuration> list = findByPropertynameGroupIdCompanyId(propertyname,
+				groupId, companyId, count - 1, count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the configurations before and after the current configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param configurationId the primary key of the current configuration
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration[] findByPropertynameGroupIdCompanyId_PrevAndNext(
+		long configurationId, String propertyname, long groupId,
+		long companyId, OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = findByPrimaryKey(configurationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Configuration[] array = new ConfigurationImpl[3];
+
+			array[0] = getByPropertynameGroupIdCompanyId_PrevAndNext(session,
+					configuration, propertyname, groupId, companyId,
+					orderByComparator, true);
+
+			array[1] = configuration;
+
+			array[2] = getByPropertynameGroupIdCompanyId_PrevAndNext(session,
+					configuration, propertyname, groupId, companyId,
+					orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected Configuration getByPropertynameGroupIdCompanyId_PrevAndNext(
+		Session session, Configuration configuration, String propertyname,
+		long groupId, long companyId, OrderByComparator orderByComparator,
+		boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_CONFIGURATION_WHERE);
+
+		boolean bindPropertyname = false;
+
+		if (propertyname == null) {
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
+		}
+		else if (propertyname.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
+		}
+		else {
+			bindPropertyname = true;
+
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
+		}
+
+		query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
+
+		query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (bindPropertyname) {
+			qPos.add(propertyname);
+		}
+
+		qPos.add(groupId);
+
+		qPos.add(companyId);
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(configuration);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<Configuration> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63; from the database.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public void removeByPropertynameGroupIdCompanyId(String propertyname,
+		long groupId, long companyId) throws SystemException {
+		for (Configuration configuration : findByPropertynameGroupIdCompanyId(
+				propertyname, groupId, companyId, QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS, null)) {
+			remove(configuration);
+		}
+	}
+
+	/**
+	 * Returns the number of configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param groupId the group ID
+	 * @param companyId the company ID
+	 * @return the number of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public int countByPropertynameGroupIdCompanyId(String propertyname,
+		long groupId, long companyId) throws SystemException {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_PROPERTYNAMEGROUPIDCOMPANYID;
+
+		Object[] finderArgs = new Object[] { propertyname, groupId, companyId };
+
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(4);
+
+			query.append(_SQL_COUNT_CONFIGURATION_WHERE);
+
+			boolean bindPropertyname = false;
+
+			if (propertyname == null) {
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
+			}
+			else if (propertyname.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
+			}
+			else {
+				bindPropertyname = true;
+
+				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
+			}
+
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
+
+			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindPropertyname) {
+					qPos.add(propertyname);
+				}
+
+				qPos.add(groupId);
+
+				qPos.add(companyId);
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1 =
+		"configuration.propertyname IS NULL AND ";
+	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2 =
+		"configuration.propertyname = ? AND ";
+	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3 =
+		"(configuration.propertyname IS NULL OR configuration.propertyname = '') AND ";
+	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2 =
+		"configuration.groupId = ? AND ";
+	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2 =
+		"configuration.companyId = ?";
 	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAME =
 		new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
 			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
@@ -119,8 +728,8 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 			new String[] {
 				String.class.getName(),
 				
-			"java.lang.Integer", "java.lang.Integer",
-				"com.liferay.portal.kernel.util.OrderByComparator"
+			Integer.class.getName(), Integer.class.getName(),
+				OrderByComparator.class.getName()
 			});
 	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAME =
 		new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
@@ -132,23 +741,542 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 			ConfigurationModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByPropertyname",
 			new String[] { String.class.getName() });
-	public static final FinderPath FINDER_PATH_WITH_PAGINATION_FIND_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
-			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
-			ConfigurationImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
-			ConfigurationModelImpl.FINDER_CACHE_ENABLED,
-			ConfigurationImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findAll", new String[0]);
-	public static final FinderPath FINDER_PATH_COUNT_ALL = new FinderPath(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
-			ConfigurationModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll", new String[0]);
+
+	/**
+	 * Returns all the configurations where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @return the matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertyname(String propertyname)
+		throws SystemException {
+		return findByPropertyname(propertyname, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the configurations where propertyname = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param propertyname the propertyname
+	 * @param start the lower bound of the range of configurations
+	 * @param end the upper bound of the range of configurations (not inclusive)
+	 * @return the range of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertyname(String propertyname,
+		int start, int end) throws SystemException {
+		return findByPropertyname(propertyname, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the configurations where propertyname = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param propertyname the propertyname
+	 * @param start the lower bound of the range of configurations
+	 * @param end the upper bound of the range of configurations (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public List<Configuration> findByPropertyname(String propertyname,
+		int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+		boolean pagination = true;
+		FinderPath finderPath = null;
+		Object[] finderArgs = null;
+
+		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
+				(orderByComparator == null)) {
+			pagination = false;
+			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAME;
+			finderArgs = new Object[] { propertyname };
+		}
+		else {
+			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAME;
+			finderArgs = new Object[] {
+					propertyname,
+					
+					start, end, orderByComparator
+				};
+		}
+
+		List<Configuration> list = (List<Configuration>)FinderCacheUtil.getResult(finderPath,
+				finderArgs, this);
+
+		if ((list != null) && !list.isEmpty()) {
+			for (Configuration configuration : list) {
+				if (!Validator.equals(propertyname,
+							configuration.getPropertyname())) {
+					list = null;
+
+					break;
+				}
+			}
+		}
+
+		if (list == null) {
+			StringBundler query = null;
+
+			if (orderByComparator != null) {
+				query = new StringBundler(3 +
+						(orderByComparator.getOrderByFields().length * 3));
+			}
+			else {
+				query = new StringBundler(3);
+			}
+
+			query.append(_SQL_SELECT_CONFIGURATION_WHERE);
+
+			boolean bindPropertyname = false;
+
+			if (propertyname == null) {
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
+			}
+			else if (propertyname.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
+			}
+			else {
+				bindPropertyname = true;
+
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
+			}
+
+			if (orderByComparator != null) {
+				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+					orderByComparator);
+			}
+			else
+			 if (pagination) {
+				query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindPropertyname) {
+					qPos.add(propertyname);
+				}
+
+				if (!pagination) {
+					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
+							start, end, false);
+
+					Collections.sort(list);
+
+					list = new UnmodifiableList<Configuration>(list);
+				}
+				else {
+					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
+							start, end);
+				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Returns the first configuration in the ordered set where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration findByPropertyname_First(String propertyname,
+		OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = fetchByPropertyname_First(propertyname,
+				orderByComparator);
+
+		if (configuration != null) {
+			return configuration;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("propertyname=");
+		msg.append(propertyname);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchConfigurationException(msg.toString());
+	}
+
+	/**
+	 * Returns the first configuration in the ordered set where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching configuration, or <code>null</code> if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration fetchByPropertyname_First(String propertyname,
+		OrderByComparator orderByComparator) throws SystemException {
+		List<Configuration> list = findByPropertyname(propertyname, 0, 1,
+				orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the last configuration in the ordered set where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration findByPropertyname_Last(String propertyname,
+		OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = fetchByPropertyname_Last(propertyname,
+				orderByComparator);
+
+		if (configuration != null) {
+			return configuration;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("propertyname=");
+		msg.append(propertyname);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchConfigurationException(msg.toString());
+	}
+
+	/**
+	 * Returns the last configuration in the ordered set where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching configuration, or <code>null</code> if a matching configuration could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration fetchByPropertyname_Last(String propertyname,
+		OrderByComparator orderByComparator) throws SystemException {
+		int count = countByPropertyname(propertyname);
+
+		if (count == 0) {
+			return null;
+		}
+
+		List<Configuration> list = findByPropertyname(propertyname, count - 1,
+				count, orderByComparator);
+
+		if (!list.isEmpty()) {
+			return list.get(0);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the configurations before and after the current configuration in the ordered set where propertyname = &#63;.
+	 *
+	 * @param configurationId the primary key of the current configuration
+	 * @param propertyname the propertyname
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next configuration
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public Configuration[] findByPropertyname_PrevAndNext(
+		long configurationId, String propertyname,
+		OrderByComparator orderByComparator)
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = findByPrimaryKey(configurationId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			Configuration[] array = new ConfigurationImpl[3];
+
+			array[0] = getByPropertyname_PrevAndNext(session, configuration,
+					propertyname, orderByComparator, true);
+
+			array[1] = configuration;
+
+			array[2] = getByPropertyname_PrevAndNext(session, configuration,
+					propertyname, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception e) {
+			throw processException(e);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected Configuration getByPropertyname_PrevAndNext(Session session,
+		Configuration configuration, String propertyname,
+		OrderByComparator orderByComparator, boolean previous) {
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(6 +
+					(orderByComparator.getOrderByFields().length * 6));
+		}
+		else {
+			query = new StringBundler(3);
+		}
+
+		query.append(_SQL_SELECT_CONFIGURATION_WHERE);
+
+		boolean bindPropertyname = false;
+
+		if (propertyname == null) {
+			query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
+		}
+		else if (propertyname.equals(StringPool.BLANK)) {
+			query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
+		}
+		else {
+			bindPropertyname = true;
+
+			query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByConditionFields[i]);
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				query.append(_ORDER_BY_ENTITY_ALIAS);
+				query.append(orderByFields[i]);
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
+		}
+
+		String sql = query.toString();
+
+		Query q = session.createQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (bindPropertyname) {
+			qPos.add(propertyname);
+		}
+
+		if (orderByComparator != null) {
+			Object[] values = orderByComparator.getOrderByConditionValues(configuration);
+
+			for (Object value : values) {
+				qPos.add(value);
+			}
+		}
+
+		List<Configuration> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Removes all the configurations where propertyname = &#63; from the database.
+	 *
+	 * @param propertyname the propertyname
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public void removeByPropertyname(String propertyname)
+		throws SystemException {
+		for (Configuration configuration : findByPropertyname(propertyname,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null)) {
+			remove(configuration);
+		}
+	}
+
+	/**
+	 * Returns the number of configurations where propertyname = &#63;.
+	 *
+	 * @param propertyname the propertyname
+	 * @return the number of matching configurations
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public int countByPropertyname(String propertyname)
+		throws SystemException {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_PROPERTYNAME;
+
+		Object[] finderArgs = new Object[] { propertyname };
+
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_CONFIGURATION_WHERE);
+
+			boolean bindPropertyname = false;
+
+			if (propertyname == null) {
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
+			}
+			else if (propertyname.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
+			}
+			else {
+				bindPropertyname = true;
+
+				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindPropertyname) {
+					qPos.add(propertyname);
+				}
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1 = "configuration.propertyname IS NULL";
+	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2 = "configuration.propertyname = ?";
+	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3 = "(configuration.propertyname IS NULL OR configuration.propertyname = '')";
+
+	public ConfigurationPersistenceImpl() {
+		setModelClass(Configuration.class);
+	}
 
 	/**
 	 * Caches the configuration in the entity cache if it is enabled.
 	 *
 	 * @param configuration the configuration
 	 */
+	@Override
 	public void cacheResult(Configuration configuration) {
 		EntityCacheUtil.putResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
 			ConfigurationImpl.class, configuration.getPrimaryKey(),
@@ -162,6 +1290,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 *
 	 * @param configurations the configurations
 	 */
+	@Override
 	public void cacheResult(List<Configuration> configurations) {
 		for (Configuration configuration : configurations) {
 			if (EntityCacheUtil.getResult(
@@ -228,6 +1357,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @param configurationId the primary key for the new configuration
 	 * @return the new configuration
 	 */
+	@Override
 	public Configuration create(long configurationId) {
 		Configuration configuration = new ConfigurationImpl();
 
@@ -245,9 +1375,10 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public Configuration remove(long configurationId)
 		throws NoSuchConfigurationException, SystemException {
-		return remove(Long.valueOf(configurationId));
+		return remove((Serializable)configurationId);
 	}
 
 	/**
@@ -301,7 +1432,14 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, configuration);
+			if (!session.contains(configuration)) {
+				configuration = (Configuration)session.get(ConfigurationImpl.class,
+						configuration.getPrimaryKeyObj());
+			}
+
+			if (configuration != null) {
+				session.delete(configuration);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -310,14 +1448,16 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 			closeSession(session);
 		}
 
-		clearCache(configuration);
+		if (configuration != null) {
+			clearCache(configuration);
+		}
 
 		return configuration;
 	}
 
 	@Override
 	public Configuration updateImpl(
-		com.rcs.configuration.model.Configuration configuration, boolean merge)
+		com.rcs.configuration.model.Configuration configuration)
 		throws SystemException {
 		configuration = toUnwrappedModel(configuration);
 
@@ -330,9 +1470,14 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, configuration, merge);
+			if (configuration.isNew()) {
+				session.save(configuration);
 
-			configuration.setNew(false);
+				configuration.setNew(false);
+			}
+			else {
+				session.merge(configuration);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -352,8 +1497,8 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
 						configurationModelImpl.getOriginalPropertyname(),
-						Long.valueOf(configurationModelImpl.getOriginalGroupId()),
-						Long.valueOf(configurationModelImpl.getOriginalCompanyId())
+						configurationModelImpl.getOriginalGroupId(),
+						configurationModelImpl.getOriginalCompanyId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_PROPERTYNAMEGROUPIDCOMPANYID,
@@ -363,8 +1508,8 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 
 				args = new Object[] {
 						configurationModelImpl.getPropertyname(),
-						Long.valueOf(configurationModelImpl.getGroupId()),
-						Long.valueOf(configurationModelImpl.getCompanyId())
+						configurationModelImpl.getGroupId(),
+						configurationModelImpl.getCompanyId()
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_PROPERTYNAMEGROUPIDCOMPANYID,
@@ -428,13 +1573,24 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 *
 	 * @param primaryKey the primary key of the configuration
 	 * @return the configuration
-	 * @throws com.liferay.portal.NoSuchModelException if a configuration with the primary key could not be found
+	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
 	public Configuration findByPrimaryKey(Serializable primaryKey)
-		throws NoSuchModelException, SystemException {
-		return findByPrimaryKey(((Long)primaryKey).longValue());
+		throws NoSuchConfigurationException, SystemException {
+		Configuration configuration = fetchByPrimaryKey(primaryKey);
+
+		if (configuration == null) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			}
+
+			throw new NoSuchConfigurationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
+				primaryKey);
+		}
+
+		return configuration;
 	}
 
 	/**
@@ -445,20 +1601,10 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public Configuration findByPrimaryKey(long configurationId)
 		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = fetchByPrimaryKey(configurationId);
-
-		if (configuration == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + configurationId);
-			}
-
-			throw new NoSuchConfigurationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
-				configurationId);
-		}
-
-		return configuration;
+		return findByPrimaryKey((Serializable)configurationId);
 	}
 
 	/**
@@ -471,7 +1617,42 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	@Override
 	public Configuration fetchByPrimaryKey(Serializable primaryKey)
 		throws SystemException {
-		return fetchByPrimaryKey(((Long)primaryKey).longValue());
+		Configuration configuration = (Configuration)EntityCacheUtil.getResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+				ConfigurationImpl.class, primaryKey);
+
+		if (configuration == _nullConfiguration) {
+			return null;
+		}
+
+		if (configuration == null) {
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				configuration = (Configuration)session.get(ConfigurationImpl.class,
+						primaryKey);
+
+				if (configuration != null) {
+					cacheResult(configuration);
+				}
+				else {
+					EntityCacheUtil.putResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+						ConfigurationImpl.class, primaryKey, _nullConfiguration);
+				}
+			}
+			catch (Exception e) {
+				EntityCacheUtil.removeResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
+					ConfigurationImpl.class, primaryKey);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return configuration;
 	}
 
 	/**
@@ -481,931 +1662,10 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @return the configuration, or <code>null</code> if a configuration with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public Configuration fetchByPrimaryKey(long configurationId)
 		throws SystemException {
-		Configuration configuration = (Configuration)EntityCacheUtil.getResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
-				ConfigurationImpl.class, configurationId);
-
-		if (configuration == _nullConfiguration) {
-			return null;
-		}
-
-		if (configuration == null) {
-			Session session = null;
-
-			boolean hasException = false;
-
-			try {
-				session = openSession();
-
-				configuration = (Configuration)session.get(ConfigurationImpl.class,
-						Long.valueOf(configurationId));
-			}
-			catch (Exception e) {
-				hasException = true;
-
-				throw processException(e);
-			}
-			finally {
-				if (configuration != null) {
-					cacheResult(configuration);
-				}
-				else if (!hasException) {
-					EntityCacheUtil.putResult(ConfigurationModelImpl.ENTITY_CACHE_ENABLED,
-						ConfigurationImpl.class, configurationId,
-						_nullConfiguration);
-				}
-
-				closeSession(session);
-			}
-		}
-
-		return configuration;
-	}
-
-	/**
-	 * Returns all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @return the matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertynameGroupIdCompanyId(
-		String propertyname, long groupId, long companyId)
-		throws SystemException {
-		return findByPropertynameGroupIdCompanyId(propertyname, groupId,
-			companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
-	}
-
-	/**
-	 * Returns a range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param start the lower bound of the range of configurations
-	 * @param end the upper bound of the range of configurations (not inclusive)
-	 * @return the range of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertynameGroupIdCompanyId(
-		String propertyname, long groupId, long companyId, int start, int end)
-		throws SystemException {
-		return findByPropertynameGroupIdCompanyId(propertyname, groupId,
-			companyId, start, end, null);
-	}
-
-	/**
-	 * Returns an ordered range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param start the lower bound of the range of configurations
-	 * @param end the upper bound of the range of configurations (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertynameGroupIdCompanyId(
-		String propertyname, long groupId, long companyId, int start, int end,
-		OrderByComparator orderByComparator) throws SystemException {
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
-
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID;
-			finderArgs = new Object[] { propertyname, groupId, companyId };
-		}
-		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAMEGROUPIDCOMPANYID;
-			finderArgs = new Object[] {
-					propertyname, groupId, companyId,
-					
-					start, end, orderByComparator
-				};
-		}
-
-		List<Configuration> list = (List<Configuration>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
-
-		if ((list != null) && !list.isEmpty()) {
-			for (Configuration configuration : list) {
-				if (!Validator.equals(propertyname,
-							configuration.getPropertyname()) ||
-						(groupId != configuration.getGroupId()) ||
-						(companyId != configuration.getCompanyId())) {
-					list = null;
-
-					break;
-				}
-			}
-		}
-
-		if (list == null) {
-			StringBundler query = null;
-
-			if (orderByComparator != null) {
-				query = new StringBundler(5 +
-						(orderByComparator.getOrderByFields().length * 3));
-			}
-			else {
-				query = new StringBundler(5);
-			}
-
-			query.append(_SQL_SELECT_CONFIGURATION_WHERE);
-
-			if (propertyname == null) {
-				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
-			}
-			else {
-				if (propertyname.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
-				}
-			}
-
-			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
-
-			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
-			}
-
-			else {
-				query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (propertyname != null) {
-					qPos.add(propertyname);
-				}
-
-				qPos.add(groupId);
-
-				qPos.add(companyId);
-
-				list = (List<Configuration>)QueryUtil.list(q, getDialect(),
-						start, end);
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(finderPath, finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
-				}
-
-				closeSession(session);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Returns the first configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration findByPropertynameGroupIdCompanyId_First(
-		String propertyname, long groupId, long companyId,
-		OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = fetchByPropertynameGroupIdCompanyId_First(propertyname,
-				groupId, companyId, orderByComparator);
-
-		if (configuration != null) {
-			return configuration;
-		}
-
-		StringBundler msg = new StringBundler(8);
-
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		msg.append("propertyname=");
-		msg.append(propertyname);
-
-		msg.append(", groupId=");
-		msg.append(groupId);
-
-		msg.append(", companyId=");
-		msg.append(companyId);
-
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-		throw new NoSuchConfigurationException(msg.toString());
-	}
-
-	/**
-	 * Returns the first configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching configuration, or <code>null</code> if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration fetchByPropertynameGroupIdCompanyId_First(
-		String propertyname, long groupId, long companyId,
-		OrderByComparator orderByComparator) throws SystemException {
-		List<Configuration> list = findByPropertynameGroupIdCompanyId(propertyname,
-				groupId, companyId, 0, 1, orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the last configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration findByPropertynameGroupIdCompanyId_Last(
-		String propertyname, long groupId, long companyId,
-		OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = fetchByPropertynameGroupIdCompanyId_Last(propertyname,
-				groupId, companyId, orderByComparator);
-
-		if (configuration != null) {
-			return configuration;
-		}
-
-		StringBundler msg = new StringBundler(8);
-
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		msg.append("propertyname=");
-		msg.append(propertyname);
-
-		msg.append(", groupId=");
-		msg.append(groupId);
-
-		msg.append(", companyId=");
-		msg.append(companyId);
-
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-		throw new NoSuchConfigurationException(msg.toString());
-	}
-
-	/**
-	 * Returns the last configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching configuration, or <code>null</code> if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration fetchByPropertynameGroupIdCompanyId_Last(
-		String propertyname, long groupId, long companyId,
-		OrderByComparator orderByComparator) throws SystemException {
-		int count = countByPropertynameGroupIdCompanyId(propertyname, groupId,
-				companyId);
-
-		List<Configuration> list = findByPropertynameGroupIdCompanyId(propertyname,
-				groupId, companyId, count - 1, count, orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the configurations before and after the current configuration in the ordered set where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param configurationId the primary key of the current configuration
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration[] findByPropertynameGroupIdCompanyId_PrevAndNext(
-		long configurationId, String propertyname, long groupId,
-		long companyId, OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = findByPrimaryKey(configurationId);
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Configuration[] array = new ConfigurationImpl[3];
-
-			array[0] = getByPropertynameGroupIdCompanyId_PrevAndNext(session,
-					configuration, propertyname, groupId, companyId,
-					orderByComparator, true);
-
-			array[1] = configuration;
-
-			array[2] = getByPropertynameGroupIdCompanyId_PrevAndNext(session,
-					configuration, propertyname, groupId, companyId,
-					orderByComparator, false);
-
-			return array;
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected Configuration getByPropertynameGroupIdCompanyId_PrevAndNext(
-		Session session, Configuration configuration, String propertyname,
-		long groupId, long companyId, OrderByComparator orderByComparator,
-		boolean previous) {
-		StringBundler query = null;
-
-		if (orderByComparator != null) {
-			query = new StringBundler(6 +
-					(orderByComparator.getOrderByFields().length * 6));
-		}
-		else {
-			query = new StringBundler(3);
-		}
-
-		query.append(_SQL_SELECT_CONFIGURATION_WHERE);
-
-		if (propertyname == null) {
-			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
-		}
-		else {
-			if (propertyname.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
-			}
-		}
-
-		query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
-
-		query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
-
-		if (orderByComparator != null) {
-			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
-
-			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
-			}
-
-			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
-
-				if ((i + 1) < orderByConditionFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN);
-					}
-				}
-			}
-
-			query.append(ORDER_BY_CLAUSE);
-
-			String[] orderByFields = orderByComparator.getOrderByFields();
-
-			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
-
-				if ((i + 1) < orderByFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
-					}
-					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
-					}
-					else {
-						query.append(ORDER_BY_DESC);
-					}
-				}
-			}
-		}
-
-		else {
-			query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
-		}
-
-		String sql = query.toString();
-
-		Query q = session.createQuery(sql);
-
-		q.setFirstResult(0);
-		q.setMaxResults(2);
-
-		QueryPos qPos = QueryPos.getInstance(q);
-
-		if (propertyname != null) {
-			qPos.add(propertyname);
-		}
-
-		qPos.add(groupId);
-
-		qPos.add(companyId);
-
-		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByConditionValues(configuration);
-
-			for (Object value : values) {
-				qPos.add(value);
-			}
-		}
-
-		List<Configuration> list = q.list();
-
-		if (list.size() == 2) {
-			return list.get(1);
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * Returns all the configurations where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @return the matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertyname(String propertyname)
-		throws SystemException {
-		return findByPropertyname(propertyname, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, null);
-	}
-
-	/**
-	 * Returns a range of all the configurations where propertyname = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param propertyname the propertyname
-	 * @param start the lower bound of the range of configurations
-	 * @param end the upper bound of the range of configurations (not inclusive)
-	 * @return the range of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertyname(String propertyname,
-		int start, int end) throws SystemException {
-		return findByPropertyname(propertyname, start, end, null);
-	}
-
-	/**
-	 * Returns an ordered range of all the configurations where propertyname = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
-	 * @param propertyname the propertyname
-	 * @param start the lower bound of the range of configurations
-	 * @param end the upper bound of the range of configurations (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public List<Configuration> findByPropertyname(String propertyname,
-		int start, int end, OrderByComparator orderByComparator)
-		throws SystemException {
-		FinderPath finderPath = null;
-		Object[] finderArgs = null;
-
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_PROPERTYNAME;
-			finderArgs = new Object[] { propertyname };
-		}
-		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_PROPERTYNAME;
-			finderArgs = new Object[] {
-					propertyname,
-					
-					start, end, orderByComparator
-				};
-		}
-
-		List<Configuration> list = (List<Configuration>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
-
-		if ((list != null) && !list.isEmpty()) {
-			for (Configuration configuration : list) {
-				if (!Validator.equals(propertyname,
-							configuration.getPropertyname())) {
-					list = null;
-
-					break;
-				}
-			}
-		}
-
-		if (list == null) {
-			StringBundler query = null;
-
-			if (orderByComparator != null) {
-				query = new StringBundler(3 +
-						(orderByComparator.getOrderByFields().length * 3));
-			}
-			else {
-				query = new StringBundler(3);
-			}
-
-			query.append(_SQL_SELECT_CONFIGURATION_WHERE);
-
-			if (propertyname == null) {
-				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
-			}
-			else {
-				if (propertyname.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
-				}
-			}
-
-			if (orderByComparator != null) {
-				appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
-					orderByComparator);
-			}
-
-			else {
-				query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (propertyname != null) {
-					qPos.add(propertyname);
-				}
-
-				list = (List<Configuration>)QueryUtil.list(q, getDialect(),
-						start, end);
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(finderPath, finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
-				}
-
-				closeSession(session);
-			}
-		}
-
-		return list;
-	}
-
-	/**
-	 * Returns the first configuration in the ordered set where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration findByPropertyname_First(String propertyname,
-		OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = fetchByPropertyname_First(propertyname,
-				orderByComparator);
-
-		if (configuration != null) {
-			return configuration;
-		}
-
-		StringBundler msg = new StringBundler(4);
-
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		msg.append("propertyname=");
-		msg.append(propertyname);
-
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-		throw new NoSuchConfigurationException(msg.toString());
-	}
-
-	/**
-	 * Returns the first configuration in the ordered set where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching configuration, or <code>null</code> if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration fetchByPropertyname_First(String propertyname,
-		OrderByComparator orderByComparator) throws SystemException {
-		List<Configuration> list = findByPropertyname(propertyname, 0, 1,
-				orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the last configuration in the ordered set where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration findByPropertyname_Last(String propertyname,
-		OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = fetchByPropertyname_Last(propertyname,
-				orderByComparator);
-
-		if (configuration != null) {
-			return configuration;
-		}
-
-		StringBundler msg = new StringBundler(4);
-
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-		msg.append("propertyname=");
-		msg.append(propertyname);
-
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-		throw new NoSuchConfigurationException(msg.toString());
-	}
-
-	/**
-	 * Returns the last configuration in the ordered set where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching configuration, or <code>null</code> if a matching configuration could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration fetchByPropertyname_Last(String propertyname,
-		OrderByComparator orderByComparator) throws SystemException {
-		int count = countByPropertyname(propertyname);
-
-		List<Configuration> list = findByPropertyname(propertyname, count - 1,
-				count, orderByComparator);
-
-		if (!list.isEmpty()) {
-			return list.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the configurations before and after the current configuration in the ordered set where propertyname = &#63;.
-	 *
-	 * @param configurationId the primary key of the current configuration
-	 * @param propertyname the propertyname
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next configuration
-	 * @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Configuration[] findByPropertyname_PrevAndNext(
-		long configurationId, String propertyname,
-		OrderByComparator orderByComparator)
-		throws NoSuchConfigurationException, SystemException {
-		Configuration configuration = findByPrimaryKey(configurationId);
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Configuration[] array = new ConfigurationImpl[3];
-
-			array[0] = getByPropertyname_PrevAndNext(session, configuration,
-					propertyname, orderByComparator, true);
-
-			array[1] = configuration;
-
-			array[2] = getByPropertyname_PrevAndNext(session, configuration,
-					propertyname, orderByComparator, false);
-
-			return array;
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-	}
-
-	protected Configuration getByPropertyname_PrevAndNext(Session session,
-		Configuration configuration, String propertyname,
-		OrderByComparator orderByComparator, boolean previous) {
-		StringBundler query = null;
-
-		if (orderByComparator != null) {
-			query = new StringBundler(6 +
-					(orderByComparator.getOrderByFields().length * 6));
-		}
-		else {
-			query = new StringBundler(3);
-		}
-
-		query.append(_SQL_SELECT_CONFIGURATION_WHERE);
-
-		if (propertyname == null) {
-			query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
-		}
-		else {
-			if (propertyname.equals(StringPool.BLANK)) {
-				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
-			}
-			else {
-				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
-			}
-		}
-
-		if (orderByComparator != null) {
-			String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
-
-			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
-			}
-
-			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
-
-				if ((i + 1) < orderByConditionFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
-					}
-					else {
-						query.append(WHERE_LESSER_THAN);
-					}
-				}
-			}
-
-			query.append(ORDER_BY_CLAUSE);
-
-			String[] orderByFields = orderByComparator.getOrderByFields();
-
-			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
-
-				if ((i + 1) < orderByFields.length) {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
-					}
-					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
-					}
-				}
-				else {
-					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
-					}
-					else {
-						query.append(ORDER_BY_DESC);
-					}
-				}
-			}
-		}
-
-		else {
-			query.append(ConfigurationModelImpl.ORDER_BY_JPQL);
-		}
-
-		String sql = query.toString();
-
-		Query q = session.createQuery(sql);
-
-		q.setFirstResult(0);
-		q.setMaxResults(2);
-
-		QueryPos qPos = QueryPos.getInstance(q);
-
-		if (propertyname != null) {
-			qPos.add(propertyname);
-		}
-
-		if (orderByComparator != null) {
-			Object[] values = orderByComparator.getOrderByConditionValues(configuration);
-
-			for (Object value : values) {
-				qPos.add(value);
-			}
-		}
-
-		List<Configuration> list = q.list();
-
-		if (list.size() == 2) {
-			return list.get(1);
-		}
-		else {
-			return null;
-		}
+		return fetchByPrimaryKey((Serializable)configurationId);
 	}
 
 	/**
@@ -1414,6 +1674,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @return the configurations
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<Configuration> findAll() throws SystemException {
 		return findAll(QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 	}
@@ -1422,7 +1683,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * Returns a range of all the configurations.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of configurations
@@ -1430,6 +1691,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @return the range of configurations
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<Configuration> findAll(int start, int end)
 		throws SystemException {
 		return findAll(start, end, null);
@@ -1439,7 +1701,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * Returns an ordered range of all the configurations.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of configurations
@@ -1448,13 +1710,16 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @return the ordered range of configurations
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public List<Configuration> findAll(int start, int end,
 		OrderByComparator orderByComparator) throws SystemException {
+		boolean pagination = true;
 		FinderPath finderPath = null;
-		Object[] finderArgs = new Object[] { start, end, orderByComparator };
+		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 				(orderByComparator == null)) {
+			pagination = false;
 			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL;
 			finderArgs = FINDER_ARGS_EMPTY;
 		}
@@ -1482,7 +1747,11 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 				sql = query.toString();
 			}
 			else {
-				sql = _SQL_SELECT_CONFIGURATION.concat(ConfigurationModelImpl.ORDER_BY_JPQL);
+				sql = _SQL_SELECT_CONFIGURATION;
+
+				if (pagination) {
+					sql = sql.concat(ConfigurationModelImpl.ORDER_BY_JPQL);
+				}
 			}
 
 			Session session = null;
@@ -1492,30 +1761,29 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 
 				Query q = session.createQuery(sql);
 
-				if (orderByComparator == null) {
+				if (!pagination) {
 					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
 							start, end, false);
 
 					Collections.sort(list);
+
+					list = new UnmodifiableList<Configuration>(list);
 				}
 				else {
 					list = (List<Configuration>)QueryUtil.list(q, getDialect(),
 							start, end);
 				}
+
+				cacheResult(list);
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
 				throw processException(e);
 			}
 			finally {
-				if (list == null) {
-					FinderCacheUtil.removeResult(finderPath, finderArgs);
-				}
-				else {
-					cacheResult(list);
-
-					FinderCacheUtil.putResult(finderPath, finderArgs, list);
-				}
-
 				closeSession(session);
 			}
 		}
@@ -1524,185 +1792,15 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	}
 
 	/**
-	 * Removes all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63; from the database.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @throws SystemException if a system exception occurred
-	 */
-	public void removeByPropertynameGroupIdCompanyId(String propertyname,
-		long groupId, long companyId) throws SystemException {
-		for (Configuration configuration : findByPropertynameGroupIdCompanyId(
-				propertyname, groupId, companyId)) {
-			remove(configuration);
-		}
-	}
-
-	/**
-	 * Removes all the configurations where propertyname = &#63; from the database.
-	 *
-	 * @param propertyname the propertyname
-	 * @throws SystemException if a system exception occurred
-	 */
-	public void removeByPropertyname(String propertyname)
-		throws SystemException {
-		for (Configuration configuration : findByPropertyname(propertyname)) {
-			remove(configuration);
-		}
-	}
-
-	/**
 	 * Removes all the configurations from the database.
 	 *
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public void removeAll() throws SystemException {
 		for (Configuration configuration : findAll()) {
 			remove(configuration);
 		}
-	}
-
-	/**
-	 * Returns the number of configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @param groupId the group ID
-	 * @param companyId the company ID
-	 * @return the number of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public int countByPropertynameGroupIdCompanyId(String propertyname,
-		long groupId, long companyId) throws SystemException {
-		Object[] finderArgs = new Object[] { propertyname, groupId, companyId };
-
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_PROPERTYNAMEGROUPIDCOMPANYID,
-				finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(4);
-
-			query.append(_SQL_COUNT_CONFIGURATION_WHERE);
-
-			if (propertyname == null) {
-				query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1);
-			}
-			else {
-				if (propertyname.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2);
-				}
-			}
-
-			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2);
-
-			query.append(_FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (propertyname != null) {
-					qPos.add(propertyname);
-				}
-
-				qPos.add(groupId);
-
-				qPos.add(companyId);
-
-				count = (Long)q.uniqueResult();
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_PROPERTYNAMEGROUPIDCOMPANYID,
-					finderArgs, count);
-
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
-	}
-
-	/**
-	 * Returns the number of configurations where propertyname = &#63;.
-	 *
-	 * @param propertyname the propertyname
-	 * @return the number of matching configurations
-	 * @throws SystemException if a system exception occurred
-	 */
-	public int countByPropertyname(String propertyname)
-		throws SystemException {
-		Object[] finderArgs = new Object[] { propertyname };
-
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_PROPERTYNAME,
-				finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(2);
-
-			query.append(_SQL_COUNT_CONFIGURATION_WHERE);
-
-			if (propertyname == null) {
-				query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1);
-			}
-			else {
-				if (propertyname.equals(StringPool.BLANK)) {
-					query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3);
-				}
-				else {
-					query.append(_FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2);
-				}
-			}
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (propertyname != null) {
-					qPos.add(propertyname);
-				}
-
-				count = (Long)q.uniqueResult();
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
-
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_PROPERTYNAME,
-					finderArgs, count);
-
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
 	}
 
 	/**
@@ -1711,6 +1809,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	 * @return the number of configurations
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public int countAll() throws SystemException {
 		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
@@ -1724,18 +1823,17 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 				Query q = session.createQuery(_SQL_COUNT_CONFIGURATION);
 
 				count = (Long)q.uniqueResult();
-			}
-			catch (Exception e) {
-				throw processException(e);
-			}
-			finally {
-				if (count == null) {
-					count = Long.valueOf(0);
-				}
 
 				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+					FINDER_ARGS_EMPTY);
 
+				throw processException(e);
+			}
+			finally {
 				closeSession(session);
 			}
 		}
@@ -1757,7 +1855,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 
 				for (String listenerClassName : listenerClassNames) {
 					listenersList.add((ModelListener<Configuration>)InstanceFactory.newInstance(
-							listenerClassName));
+							getClassLoader(), listenerClassName));
 				}
 
 				listeners = listenersList.toArray(new ModelListener[listenersList.size()]);
@@ -1771,32 +1869,14 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 	public void destroy() {
 		EntityCacheUtil.removeCache(ConfigurationImpl.class.getName());
 		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
+		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@BeanReference(type = ConfigurationPersistence.class)
-	protected ConfigurationPersistence configurationPersistence;
-	@BeanReference(type = ResourcePersistence.class)
-	protected ResourcePersistence resourcePersistence;
-	@BeanReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
 	private static final String _SQL_SELECT_CONFIGURATION = "SELECT configuration FROM Configuration configuration";
 	private static final String _SQL_SELECT_CONFIGURATION_WHERE = "SELECT configuration FROM Configuration configuration WHERE ";
 	private static final String _SQL_COUNT_CONFIGURATION = "SELECT COUNT(configuration) FROM Configuration configuration";
 	private static final String _SQL_COUNT_CONFIGURATION_WHERE = "SELECT COUNT(configuration) FROM Configuration configuration WHERE ";
-	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_1 =
-		"configuration.propertyname IS NULL AND ";
-	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_2 =
-		"configuration.propertyname = ? AND ";
-	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_PROPERTYNAME_3 =
-		"(configuration.propertyname IS NULL OR configuration.propertyname = ?) AND ";
-	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_GROUPID_2 =
-		"configuration.groupId = ? AND ";
-	private static final String _FINDER_COLUMN_PROPERTYNAMEGROUPIDCOMPANYID_COMPANYID_2 =
-		"configuration.companyId = ?";
-	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_1 = "configuration.propertyname IS NULL";
-	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_2 = "configuration.propertyname = ?";
-	private static final String _FINDER_COLUMN_PROPERTYNAME_PROPERTYNAME_3 = "(configuration.propertyname IS NULL OR configuration.propertyname = ?)";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "configuration.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Configuration exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Configuration exists with the key {";
@@ -1816,6 +1896,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 		};
 
 	private static CacheModel<Configuration> _nullConfigurationCacheModel = new CacheModel<Configuration>() {
+			@Override
 			public Configuration toEntityModel() {
 				return _nullConfiguration;
 			}

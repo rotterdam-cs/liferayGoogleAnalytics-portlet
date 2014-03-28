@@ -85,13 +85,14 @@ public class GoogleAnalyticsController {
 		locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));		
 		configurationDTO = configurationExpert.getConfiguration();
 		fullCurrentURL = configurationDTO.getRedirect_url();
-				
+		pII = utilsExpert.getPortalInstanceIdentifier(request);
+	   
 		modelAttrs = googleAnalyticsDataExpert.getGoogleAnalyticsAccountData(configurationDTO, pII, locale, modelAttrs);		
 		modelAttrs.put("configuration", configurationDTO);		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);
 	    	    			
-		return new ModelAndView("/WEB-INF/views/view.jsp", modelAttrs);
+		return new ModelAndView("view", modelAttrs);
 	}
 	
 	/**
@@ -215,10 +216,10 @@ public class GoogleAnalyticsController {
     	} else {
     		String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.graphics.admin.missing.configuration", locale);
             modelAttrs.put("errorMessage", message);
-            return new ModelAndView("/WEB-INF/views/googleanalytics/top_messages.jsp", modelAttrs);
+            return new ModelAndView("googleanalytics/top_messages", modelAttrs);
     	}
          
-        return new ModelAndView("/WEB-INF/views/googleanalytics/view_reports.jsp", modelAttrs);       
+        return new ModelAndView("googleanalytics/view_reports", modelAttrs);       
     }
 		
 	@ResourceMapping(value = "getAnalyticsData")

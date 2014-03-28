@@ -3,7 +3,7 @@
 
 <plugin-package>
         <name>Google Analytics</name>
-        <module-id>rcs/google-analytics-portlet/6.1.1.1-ce-ga2/war</module-id>
+        <module-id>rcs/liferayGoogleAnalytics-portlet/6.2.0-ce-ga1/war</module-id>
         <types>
                 <type>portlet</type>
         </types>
@@ -17,6 +17,6 @@
                 <license osi-approved="true">LGPL</license>
         </licenses>
         <liferay-versions>
-                <liferay-version>6.1.1</liferay-version>
+                <liferay-version>6.2.0+</liferay-version>
         </liferay-versions>
 </plugin-package>
