@@ -17,7 +17,7 @@
 <portlet:resourceURL var="getGoogleAnalyticsDataURL" id="getGoogleAnalyticsData" />
 
 
-<div class="modal fade" id="<portlet:namespace/>helpWindow">
+<div class="modal fade" id="<portlet:namespace/>helpWindow" style="display: none;">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
         <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.configuration"/> <span style="float: right;"></span></h3>
@@ -176,8 +176,9 @@
 	}
 	
     jQuery(function() {
+    	var googleAnalyticsAccountsJSON;
     	<c:if test="${googleAnalyticsAccountsJSON != null && googleAnalyticsAccountsJSON != ''}" >
-    	   var googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
+    	   googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
     	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);      	       	   
     	</c:if>
     	
@@ -216,8 +217,8 @@
 	            	            	jQuery("#<portlet:namespace/>authorize-button").show();
 	                        		jQuery("#<portlet:namespace/>save-configuration").hide();
 	                        		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();
-	            	            } else {	            	            	
-	            	            	var googleAnalyticsAccountsJSON = jQuery.parseJSON(response[2]);
+	            	            } else {	
+	            	            	googleAnalyticsAccountsJSON = jQuery.parseJSON(response[2]);
 	            	            	queryAccountsConfiguration(googleAnalyticsAccountsJSON);
 	            	            	jQuery("#<portlet:namespace/>authorize-button").hide();
 		                    		jQuery("#<portlet:namespace/>save-configuration").show();

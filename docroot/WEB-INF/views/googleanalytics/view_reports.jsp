@@ -13,7 +13,7 @@
 <portlet:resourceURL var="getAnalyticsDataURL" id="getAnalyticsData" />
 <portlet:defineObjects />
 
-<div class="modal fade" id="<portlet:namespace/>helpWindow">
+<div class="modal fade" id="<portlet:namespace/>helpWindow" style="display: none">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
         <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.view.reports"/> <span style="float: right;"></span></h3>

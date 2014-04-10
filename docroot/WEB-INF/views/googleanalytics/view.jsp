@@ -32,7 +32,6 @@
 <script type="text/javascript">
     Liferay.on('portletReady', function(event) {
         if('_' + event.portletId + '_' == '<portlet:namespace/>') {
-        	console.log("test if");
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
          	<c:if test="${messages != ''}" >messages = ${messages};</c:if>
          	namespace = '<portlet:namespace/>';
