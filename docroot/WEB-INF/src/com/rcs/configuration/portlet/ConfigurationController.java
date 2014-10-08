@@ -88,11 +88,17 @@ public class ConfigurationController {
 	 */
 	@RenderMapping
 	public ModelAndView resolveView(PortletRequest request, PortletResponse response) throws PortalException, SystemException {
-		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
+		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();				
+		
+		modelAttrs.put("isUserSignedIn", utilsExpert.isUserSignedIn(request));
+		if(!utilsExpert.isUserSignedIn(request)) {
+			modelAttrs.put("messages", "");
+			return new ModelAndView("googleanalytics/view", modelAttrs);
+		}
 		
 		HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
 		locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));		
-		pII = utilsExpert.getPortalInstanceIdentifier(request);
+		pII = utilsExpert.getPortalInstanceIdentifier(request);			
 		configurationDTO = configurationExpert.getConfiguration();
 		fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
 		fullCurrentURL = StringUtils.substringBefore(fullCurrentURL, "&");
