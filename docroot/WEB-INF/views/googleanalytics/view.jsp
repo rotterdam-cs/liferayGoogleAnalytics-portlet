@@ -17,6 +17,8 @@
 
 <%@include file="header.jsp" %>
 
+<c:if test="${isUserSignedIn}" >
+
 <div class="container-fluid">
     <div class="row-fluid admin-mask" id="<portlet:namespace/>administration-container-mask">
         <div class="span9 admin-left-container">
@@ -29,9 +31,11 @@
     </div>
 </div>
 
+</c:if>
+
 <script type="text/javascript">
     Liferay.on('portletReady', function(event) {
-        if('_' + event.portletId + '_' == '<portlet:namespace/>') {
+        if('_' + event.portletId + '_' == '<portlet:namespace/>' && ${isUserSignedIn}) {
         	defaultErrorMessage = '<fmt:message key="com.rcs.general.error"/>';
          	<c:if test="${messages != ''}" >messages = ${messages};</c:if>
          	namespace = '<portlet:namespace/>';

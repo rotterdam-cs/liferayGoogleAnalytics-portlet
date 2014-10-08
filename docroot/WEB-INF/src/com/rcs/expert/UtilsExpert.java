@@ -22,10 +22,18 @@ public class UtilsExpert {
 	 * @return
 	 */
 	public PortalInstanceIdentifier getPortalInstanceIdentifier(PortletRequest request) {
-		ThemeDisplay themeDisplay= (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);		
+		ThemeDisplay themeDisplay= (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		if(request.getAttribute(WebKeys.USER_ID) == null) {
+			return null;
+		}
 		long liferayUserId = (Long) request.getAttribute(WebKeys.USER_ID);
 		long groupId = themeDisplay.getScopeGroupId();		
 		return getPortalInstanceIdentifierByParameters(groupId, liferayUserId);
+	}
+	
+	public boolean isUserSignedIn(PortletRequest request) {
+		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		return themeDisplay.isSignedIn();
 	}
 	
 	/**
