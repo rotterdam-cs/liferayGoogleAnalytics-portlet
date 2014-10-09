@@ -252,22 +252,26 @@
         jQuery(document).on("keypress", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false); 
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();   
+            jQuery("#<portlet:namespace/>client_id").val(jQuery.trim(jQuery("#<portlet:namespace/>client_id").val()));
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>client_id").val(jQuery.trim(jQuery("#<portlet:namespace/>client_id").val()));
         });
         jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>client_secret").val(jQuery.trim(jQuery("#<portlet:namespace/>client_secret").val()));
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();    
+            jQuery("#<portlet:namespace/>client_secret").val(jQuery.trim(jQuery("#<portlet:namespace/>client_secret").val()));
         });
         
         <%--//Form Options for Save Button --%>
