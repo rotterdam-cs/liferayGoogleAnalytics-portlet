@@ -3,7 +3,9 @@ package com.rcs.expert;
 import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 
-import org.apache.log4j.Logger;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -14,7 +16,8 @@ import com.rcs.common.PortalInstanceIdentifier;
 
 @Component
 public class UtilsExpert {
-	private static final Logger log = Logger.getLogger(UtilsExpert.class);
+	
+	private static final Log log = LogFactoryUtil.getLog(UtilsExpert.class);
 
 	/**
 	 * Get PortalInstaceIdentifier based on the PortletRequest
