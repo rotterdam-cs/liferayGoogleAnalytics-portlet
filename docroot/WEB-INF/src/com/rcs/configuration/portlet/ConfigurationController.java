@@ -356,8 +356,23 @@ public class ConfigurationController {
 		    	boolean isValidAccess = false;
 		    	try {
 			    	isValidAccess = googleAnalyticsDataExpert.isValidAccess(configurationDTO, pII);
-			    } catch(TokenResponseException e) {			    	
-			    	message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);			        
+			    } catch(TokenResponseException e) {			 
+			    	if(e.getDetails() != null) {
+			    		if(e.getDetails().getError().equals("invalid_client")) {
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);	    			
+			    		} else if(e.getDetails().getError().equals("invalid_grant")) { 
+			    			// If you contact Google for an OAuth2 token too quickly, 
+			    			// before the previous token expires,
+			    			// they will serve you that message.
+			    			//You have requested access too soon, you have to wait a couple of minutes to retry.
+			    			//com.rcs.googleanalytics.error.token.response.invalid.grant
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response.invalid.grant", locale);
+			    		} else {
+			    			//general error
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);	    			
+			    		}
+			    	}	    	
+			    				    				       
 			        result.setMessage(message);
 			        isValidAccess = false;
 			        result.setSuccess(false);			        
