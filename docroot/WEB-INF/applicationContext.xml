@@ -16,11 +16,11 @@
 	<!-- look for service classes 
     <context:component-scan base-package="com.rcs.expert" />
 -->
-	<!-- prefixes and suffixes for the view resolver -->
+	<!-- prefixes and suffixes for the view resolver
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
-        <property name="prefix" value="/html/" />
+        <property name="prefix" value="" />
         <property name="suffix" value=".jsp" />
     </bean>
-	
+	 -->
 </beans>
