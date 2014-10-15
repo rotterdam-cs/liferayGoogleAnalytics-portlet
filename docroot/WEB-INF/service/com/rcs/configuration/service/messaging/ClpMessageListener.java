@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,7 +21,7 @@ import com.rcs.configuration.service.ClpSerializer;
 import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author rotterdamcs
  */
 public class ClpMessageListener extends BaseMessageListener {
 	public static String getServletContextName() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,7 +19,8 @@ import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
 import java.util.Arrays;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author rotterdamcs
+ * @generated
  */
 public class ConfigurationLocalServiceClpInvoker {
 	public ConfigurationLocalServiceClpInvoker() {
@@ -72,65 +73,66 @@ public class ConfigurationLocalServiceClpInvoker {
 				"com.liferay.portal.kernel.dao.orm.DynamicQuery"
 			};
 
-		_methodName9 = "fetchConfiguration";
+		_methodName9 = "dynamicQueryCount";
 
-		_methodParameterTypes9 = new String[] { "long" };
+		_methodParameterTypes9 = new String[] {
+				"com.liferay.portal.kernel.dao.orm.DynamicQuery",
+				"com.liferay.portal.kernel.dao.orm.Projection"
+			};
 
-		_methodName10 = "getConfiguration";
+		_methodName10 = "fetchConfiguration";
 
 		_methodParameterTypes10 = new String[] { "long" };
 
-		_methodName11 = "getPersistedModel";
+		_methodName11 = "getConfiguration";
 
-		_methodParameterTypes11 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes11 = new String[] { "long" };
 
-		_methodName12 = "getConfigurations";
+		_methodName12 = "getPersistedModel";
 
-		_methodParameterTypes12 = new String[] { "int", "int" };
+		_methodParameterTypes12 = new String[] { "java.io.Serializable" };
 
-		_methodName13 = "getConfigurationsCount";
+		_methodName13 = "getConfigurations";
 
-		_methodParameterTypes13 = new String[] {  };
+		_methodParameterTypes13 = new String[] { "int", "int" };
 
-		_methodName14 = "updateConfiguration";
+		_methodName14 = "getConfigurationsCount";
 
-		_methodParameterTypes14 = new String[] {
-				"com.rcs.configuration.model.Configuration"
-			};
+		_methodParameterTypes14 = new String[] {  };
 
 		_methodName15 = "updateConfiguration";
 
 		_methodParameterTypes15 = new String[] {
-				"com.rcs.configuration.model.Configuration", "boolean"
+				"com.rcs.configuration.model.Configuration"
 			};
 
-		_methodName36 = "getBeanIdentifier";
+		_methodName32 = "getBeanIdentifier";
 
-		_methodParameterTypes36 = new String[] {  };
+		_methodParameterTypes32 = new String[] {  };
 
-		_methodName37 = "setBeanIdentifier";
+		_methodName33 = "setBeanIdentifier";
 
-		_methodParameterTypes37 = new String[] { "java.lang.String" };
+		_methodParameterTypes33 = new String[] { "java.lang.String" };
 
-		_methodName42 = "addConfiguration";
+		_methodName38 = "addConfiguration";
 
-		_methodParameterTypes42 = new String[] {
+		_methodParameterTypes38 = new String[] {
 				"long", "long", "java.lang.String", "java.lang.String"
 			};
 
-		_methodName43 = "getConfigurationByPropertyName";
+		_methodName39 = "getConfigurationByPropertyName";
 
-		_methodParameterTypes43 = new String[] {
+		_methodParameterTypes39 = new String[] {
 				"java.lang.String", "long", "long"
 			};
 
-		_methodName44 = "getConfigurationByPropertyName";
+		_methodName40 = "getConfigurationByPropertyName";
 
-		_methodParameterTypes44 = new String[] { "java.lang.String" };
+		_methodParameterTypes40 = new String[] { "java.lang.String" };
 
-		_methodName45 = "deleteDetailedConfiguration";
+		_methodName41 = "deleteDetailedConfiguration";
 
-		_methodParameterTypes45 = new String[] {  };
+		_methodParameterTypes41 = new String[] {  };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -187,73 +189,77 @@ public class ConfigurationLocalServiceClpInvoker {
 
 		if (_methodName9.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes9, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.fetchConfiguration(((Long)arguments[0]).longValue());
+			return ConfigurationLocalServiceUtil.dynamicQueryCount((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
+				(com.liferay.portal.kernel.dao.orm.Projection)arguments[1]);
 		}
 
 		if (_methodName10.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes10, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.getConfiguration(((Long)arguments[0]).longValue());
+			return ConfigurationLocalServiceUtil.fetchConfiguration(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName11.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes11, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
+			return ConfigurationLocalServiceUtil.getConfiguration(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName12.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes12, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.getConfigurations(((Integer)arguments[0]).intValue(),
-				((Integer)arguments[1]).intValue());
+			return ConfigurationLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
 		}
 
 		if (_methodName13.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes13, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.getConfigurationsCount();
+			return ConfigurationLocalServiceUtil.getConfigurations(((Integer)arguments[0]).intValue(),
+				((Integer)arguments[1]).intValue());
 		}
 
 		if (_methodName14.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes14, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.updateConfiguration((com.rcs.configuration.model.Configuration)arguments[0]);
+			return ConfigurationLocalServiceUtil.getConfigurationsCount();
 		}
 
 		if (_methodName15.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes15, parameterTypes)) {
-			return ConfigurationLocalServiceUtil.updateConfiguration((com.rcs.configuration.model.Configuration)arguments[0],
-				((Boolean)arguments[1]).booleanValue());
+			return ConfigurationLocalServiceUtil.updateConfiguration((com.rcs.configuration.model.Configuration)arguments[0]);
 		}
 
-		if (_methodName36.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes36, parameterTypes)) {
+		if (_methodName32.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes32, parameterTypes)) {
 			return ConfigurationLocalServiceUtil.getBeanIdentifier();
 		}
 
-		if (_methodName37.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes37, parameterTypes)) {
+		if (_methodName33.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes33, parameterTypes)) {
 			ConfigurationLocalServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
+
+			return null;
 		}
 
-		if (_methodName42.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes42, parameterTypes)) {
+		if (_methodName38.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes38, parameterTypes)) {
 			return ConfigurationLocalServiceUtil.addConfiguration(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue(),
 				(java.lang.String)arguments[2], (java.lang.String)arguments[3]);
 		}
 
-		if (_methodName43.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes43, parameterTypes)) {
+		if (_methodName39.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes39, parameterTypes)) {
 			return ConfigurationLocalServiceUtil.getConfigurationByPropertyName((java.lang.String)arguments[0],
 				((Long)arguments[1]).longValue(),
 				((Long)arguments[2]).longValue());
 		}
 
-		if (_methodName44.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes44, parameterTypes)) {
+		if (_methodName40.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes40, parameterTypes)) {
 			return ConfigurationLocalServiceUtil.getConfigurationByPropertyName((java.lang.String)arguments[0]);
 		}
 
-		if (_methodName45.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes45, parameterTypes)) {
+		if (_methodName41.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes41, parameterTypes)) {
 			ConfigurationLocalServiceUtil.deleteDetailedConfiguration();
+
+			return null;
 		}
 
 		throw new UnsupportedOperationException();
@@ -291,16 +297,16 @@ public class ConfigurationLocalServiceClpInvoker {
 	private String[] _methodParameterTypes14;
 	private String _methodName15;
 	private String[] _methodParameterTypes15;
-	private String _methodName36;
-	private String[] _methodParameterTypes36;
-	private String _methodName37;
-	private String[] _methodParameterTypes37;
-	private String _methodName42;
-	private String[] _methodParameterTypes42;
-	private String _methodName43;
-	private String[] _methodParameterTypes43;
-	private String _methodName44;
-	private String[] _methodParameterTypes44;
-	private String _methodName45;
-	private String[] _methodParameterTypes45;
+	private String _methodName32;
+	private String[] _methodParameterTypes32;
+	private String _methodName33;
+	private String[] _methodParameterTypes33;
+	private String _methodName38;
+	private String[] _methodParameterTypes38;
+	private String _methodName39;
+	private String[] _methodParameterTypes39;
+	private String _methodName40;
+	private String[] _methodParameterTypes40;
+	private String _methodName41;
+	private String[] _methodParameterTypes41;
 }

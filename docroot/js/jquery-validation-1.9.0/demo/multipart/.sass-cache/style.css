@@ -13,7 +13,7 @@
 body {
   background-color: #000;
   color: #555;
-  font: 78%/1.6 Verdana, "Trebuchet MS", arial, sans-serif;
+  font: 78%/ 1.6 Verdana, 'Trebuchet MS', arial, sans-serif;
   text-align: center;
   margin: 15px 0; }
 
@@ -82,7 +82,7 @@ code {
   text-align: left;
   display: block;
   overflow: auto;
-  font: 500 1em/1.5em "Lucida Console", "courier new", monospace;
+  font: 500 1em/ 1.5em 'Lucida Console', 'courier new', monospace;
   /* white-space: pre; */
   background: #FAFAFA;
   border: 1px solid #EAEAEA;

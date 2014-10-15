@@ -1,6 +1,5 @@
 <%@page import="com.liferay.portal.kernel.util.LocaleUtil"%>
 <%@page import="java.util.Locale"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%    
     String languageId = request.getParameter("languageId");
@@ -12,4 +11,6 @@
     String language = locale.getLanguage();
     String extLocaleFile = "messages_" + language + ".js";
 %>
+
+<%@page contentType="text/javascript"%>
 <jsp:include page="<%=extLocaleFile%>" />

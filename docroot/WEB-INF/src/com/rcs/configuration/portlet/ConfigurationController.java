@@ -88,11 +88,17 @@ public class ConfigurationController {
 	 */
 	@RenderMapping
 	public ModelAndView resolveView(PortletRequest request, PortletResponse response) throws PortalException, SystemException {
-		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
+		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();				
+		
+		modelAttrs.put("isUserSignedIn", utilsExpert.isUserSignedIn(request));
+		if(!utilsExpert.isUserSignedIn(request)) {
+			modelAttrs.put("messages", "");
+			return new ModelAndView("googleanalytics/view", modelAttrs);
+		}
 		
 		HttpServletRequest httpReq = PortalUtil.getOriginalServletRequest(PortalUtil.getHttpServletRequest(request));
 		locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));		
-		pII = utilsExpert.getPortalInstanceIdentifier(request);
+		pII = utilsExpert.getPortalInstanceIdentifier(request);			
 		configurationDTO = configurationExpert.getConfiguration();
 		fullCurrentURL = PortalUtil.getCurrentCompleteURL(httpReq);
 		fullCurrentURL = StringUtils.substringBefore(fullCurrentURL, "&");
@@ -107,7 +113,7 @@ public class ConfigurationController {
 		modelAttrs.put("configuration", configurationDTO);		
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);	    
-		return new ModelAndView("/WEB-INF/views/googleanalytics/view.jsp", modelAttrs);
+		return new ModelAndView("googleanalytics/view", modelAttrs);
 	}
 	
 	/**
@@ -204,7 +210,7 @@ public class ConfigurationController {
     ) {		
 	    HashMap<String, Object> modelAttrs = new HashMap<String, Object>();	
         modelAttrs.put("configuration", configurationDTO);
-        
+       
         //Account
         if (section.equals(ADMIN_SECTION_CONFIGURATION)) {        	
         	modelAttrs = googleAnalyticsDataExpert.getGoogleAnalyticsAccountData(configurationDTO, pII, locale, modelAttrs);        	
@@ -216,7 +222,7 @@ public class ConfigurationController {
 				log.info("MalformedURLException: ", ignored);
 			}
         	modelAttrs.put("serverURL", "http://"+url.getHost());
-        
+        	log.info("section: "+url.getHost());
         	//Analytics
         } else if (section.equals(ADMIN_SECTION_VIEW_REPORTS)) {
         	//Default Date Range
@@ -244,7 +250,7 @@ public class ConfigurationController {
         		} catch(SocketTimeoutException e) {
         			String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.socket.timeout", locale);
                     modelAttrs.put("errorMessage", message);
-                    return new ModelAndView("/WEB-INF/views/googleanalytics/top_messages.jsp", modelAttrs);
+                    return new ModelAndView("googleanalytics/top_messages", modelAttrs);
         		}	        	
 	        	Gson gson = new Gson();
 		        String gad = gson.toJson(liferayGoogleAnalyticsDTO);
@@ -253,10 +259,10 @@ public class ConfigurationController {
         	} else {
         		String message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.admin.error.graphics.profile.not.selected", locale);
                 modelAttrs.put("errorMessage", message);
-                return new ModelAndView("/WEB-INF/views/googleanalytics/top_messages.jsp", modelAttrs);
+                return new ModelAndView("googleanalytics/top_messages", modelAttrs);
         	}
         } 
-        return new ModelAndView("/WEB-INF/views/googleanalytics/" + section + ".jsp", modelAttrs);       
+        return new ModelAndView("googleanalytics/" + section, modelAttrs);       
     }
 	
 	/**
@@ -350,8 +356,23 @@ public class ConfigurationController {
 		    	boolean isValidAccess = false;
 		    	try {
 			    	isValidAccess = googleAnalyticsDataExpert.isValidAccess(configurationDTO, pII);
-			    } catch(TokenResponseException e) {			    	
-			    	message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);			        
+			    } catch(TokenResponseException e) {			 
+			    	if(e.getDetails() != null) {
+			    		if(e.getDetails().getError().equals("invalid_client")) {
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);	    			
+			    		} else if(e.getDetails().getError().equals("invalid_grant")) { 
+			    			// If you contact Google for an OAuth2 token too quickly, 
+			    			// before the previous token expires,
+			    			// they will serve you that message.
+			    			//You have requested access too soon, you have to wait a couple of minutes to retry.
+			    			//com.rcs.googleanalytics.error.token.response.invalid.grant
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response.invalid.grant", locale);
+			    		} else {
+			    			//general error
+			    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);	    			
+			    		}
+			    	}	    	
+			    				    				       
 			        result.setMessage(message);
 			        isValidAccess = false;
 			        result.setSuccess(false);			        

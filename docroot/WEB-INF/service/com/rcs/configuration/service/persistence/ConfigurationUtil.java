@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -61,7 +61,7 @@ public class ConfigurationUtil {
 	/**
 	 * @see com.liferay.portal.service.persistence.BasePersistence#countWithDynamicQuery(DynamicQuery)
 	 */
-	public long countWithDynamicQuery(DynamicQuery dynamicQuery)
+	public static long countWithDynamicQuery(DynamicQuery dynamicQuery)
 		throws SystemException {
 		return getPersistence().countWithDynamicQuery(dynamicQuery);
 	}
@@ -95,99 +95,19 @@ public class ConfigurationUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
+	 */
+	public static Configuration update(Configuration configuration)
+		throws SystemException {
+		return getPersistence().update(configuration);
+	}
+
+	/**
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static Configuration update(Configuration configuration,
-		boolean merge) throws SystemException {
-		return getPersistence().update(configuration, merge);
-	}
-
-	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
-	 */
-	public static Configuration update(Configuration configuration,
-		boolean merge, ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(configuration, merge, serviceContext);
-	}
-
-	/**
-	* Caches the configuration in the entity cache if it is enabled.
-	*
-	* @param configuration the configuration
-	*/
-	public static void cacheResult(
-		com.rcs.configuration.model.Configuration configuration) {
-		getPersistence().cacheResult(configuration);
-	}
-
-	/**
-	* Caches the configurations in the entity cache if it is enabled.
-	*
-	* @param configurations the configurations
-	*/
-	public static void cacheResult(
-		java.util.List<com.rcs.configuration.model.Configuration> configurations) {
-		getPersistence().cacheResult(configurations);
-	}
-
-	/**
-	* Creates a new configuration with the primary key. Does not add the configuration to the database.
-	*
-	* @param configurationId the primary key for the new configuration
-	* @return the new configuration
-	*/
-	public static com.rcs.configuration.model.Configuration create(
-		long configurationId) {
-		return getPersistence().create(configurationId);
-	}
-
-	/**
-	* Removes the configuration with the primary key from the database. Also notifies the appropriate model listeners.
-	*
-	* @param configurationId the primary key of the configuration
-	* @return the configuration that was removed
-	* @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.rcs.configuration.model.Configuration remove(
-		long configurationId)
-		throws com.liferay.portal.kernel.exception.SystemException,
-			com.rcs.configuration.NoSuchConfigurationException {
-		return getPersistence().remove(configurationId);
-	}
-
-	public static com.rcs.configuration.model.Configuration updateImpl(
-		com.rcs.configuration.model.Configuration configuration, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(configuration, merge);
-	}
-
-	/**
-	* Returns the configuration with the primary key or throws a {@link com.rcs.configuration.NoSuchConfigurationException} if it could not be found.
-	*
-	* @param configurationId the primary key of the configuration
-	* @return the configuration
-	* @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.rcs.configuration.model.Configuration findByPrimaryKey(
-		long configurationId)
-		throws com.liferay.portal.kernel.exception.SystemException,
-			com.rcs.configuration.NoSuchConfigurationException {
-		return getPersistence().findByPrimaryKey(configurationId);
-	}
-
-	/**
-	* Returns the configuration with the primary key or returns <code>null</code> if it could not be found.
-	*
-	* @param configurationId the primary key of the configuration
-	* @return the configuration, or <code>null</code> if a configuration with the primary key could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.rcs.configuration.model.Configuration fetchByPrimaryKey(
-		long configurationId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().fetchByPrimaryKey(configurationId);
+		ServiceContext serviceContext) throws SystemException {
+		return getPersistence().update(configuration, serviceContext);
 	}
 
 	/**
@@ -211,7 +131,7 @@ public class ConfigurationUtil {
 	* Returns a range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param propertyname the propertyname
@@ -234,7 +154,7 @@ public class ConfigurationUtil {
 	* Returns an ordered range of all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param propertyname the propertyname
@@ -360,6 +280,39 @@ public class ConfigurationUtil {
 	}
 
 	/**
+	* Removes all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63; from the database.
+	*
+	* @param propertyname the propertyname
+	* @param groupId the group ID
+	* @param companyId the company ID
+	* @throws SystemException if a system exception occurred
+	*/
+	public static void removeByPropertynameGroupIdCompanyId(
+		java.lang.String propertyname, long groupId, long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		getPersistence()
+			.removeByPropertynameGroupIdCompanyId(propertyname, groupId,
+			companyId);
+	}
+
+	/**
+	* Returns the number of configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
+	*
+	* @param propertyname the propertyname
+	* @param groupId the group ID
+	* @param companyId the company ID
+	* @return the number of matching configurations
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int countByPropertynameGroupIdCompanyId(
+		java.lang.String propertyname, long groupId, long companyId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .countByPropertynameGroupIdCompanyId(propertyname, groupId,
+			companyId);
+	}
+
+	/**
 	* Returns all the configurations where propertyname = &#63;.
 	*
 	* @param propertyname the propertyname
@@ -376,7 +329,7 @@ public class ConfigurationUtil {
 	* Returns a range of all the configurations where propertyname = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param propertyname the propertyname
@@ -395,7 +348,7 @@ public class ConfigurationUtil {
 	* Returns an ordered range of all the configurations where propertyname = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param propertyname the propertyname
@@ -503,6 +456,109 @@ public class ConfigurationUtil {
 	}
 
 	/**
+	* Removes all the configurations where propertyname = &#63; from the database.
+	*
+	* @param propertyname the propertyname
+	* @throws SystemException if a system exception occurred
+	*/
+	public static void removeByPropertyname(java.lang.String propertyname)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		getPersistence().removeByPropertyname(propertyname);
+	}
+
+	/**
+	* Returns the number of configurations where propertyname = &#63;.
+	*
+	* @param propertyname the propertyname
+	* @return the number of matching configurations
+	* @throws SystemException if a system exception occurred
+	*/
+	public static int countByPropertyname(java.lang.String propertyname)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().countByPropertyname(propertyname);
+	}
+
+	/**
+	* Caches the configuration in the entity cache if it is enabled.
+	*
+	* @param configuration the configuration
+	*/
+	public static void cacheResult(
+		com.rcs.configuration.model.Configuration configuration) {
+		getPersistence().cacheResult(configuration);
+	}
+
+	/**
+	* Caches the configurations in the entity cache if it is enabled.
+	*
+	* @param configurations the configurations
+	*/
+	public static void cacheResult(
+		java.util.List<com.rcs.configuration.model.Configuration> configurations) {
+		getPersistence().cacheResult(configurations);
+	}
+
+	/**
+	* Creates a new configuration with the primary key. Does not add the configuration to the database.
+	*
+	* @param configurationId the primary key for the new configuration
+	* @return the new configuration
+	*/
+	public static com.rcs.configuration.model.Configuration create(
+		long configurationId) {
+		return getPersistence().create(configurationId);
+	}
+
+	/**
+	* Removes the configuration with the primary key from the database. Also notifies the appropriate model listeners.
+	*
+	* @param configurationId the primary key of the configuration
+	* @return the configuration that was removed
+	* @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.rcs.configuration.model.Configuration remove(
+		long configurationId)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.rcs.configuration.NoSuchConfigurationException {
+		return getPersistence().remove(configurationId);
+	}
+
+	public static com.rcs.configuration.model.Configuration updateImpl(
+		com.rcs.configuration.model.Configuration configuration)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().updateImpl(configuration);
+	}
+
+	/**
+	* Returns the configuration with the primary key or throws a {@link com.rcs.configuration.NoSuchConfigurationException} if it could not be found.
+	*
+	* @param configurationId the primary key of the configuration
+	* @return the configuration
+	* @throws com.rcs.configuration.NoSuchConfigurationException if a configuration with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.rcs.configuration.model.Configuration findByPrimaryKey(
+		long configurationId)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			com.rcs.configuration.NoSuchConfigurationException {
+		return getPersistence().findByPrimaryKey(configurationId);
+	}
+
+	/**
+	* Returns the configuration with the primary key or returns <code>null</code> if it could not be found.
+	*
+	* @param configurationId the primary key of the configuration
+	* @return the configuration, or <code>null</code> if a configuration with the primary key could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.rcs.configuration.model.Configuration fetchByPrimaryKey(
+		long configurationId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByPrimaryKey(configurationId);
+	}
+
+	/**
 	* Returns all the configurations.
 	*
 	* @return the configurations
@@ -517,7 +573,7 @@ public class ConfigurationUtil {
 	* Returns a range of all the configurations.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of configurations
@@ -535,7 +591,7 @@ public class ConfigurationUtil {
 	* Returns an ordered range of all the configurations.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.rcs.configuration.model.impl.ConfigurationModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of configurations
@@ -552,33 +608,6 @@ public class ConfigurationUtil {
 	}
 
 	/**
-	* Removes all the configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63; from the database.
-	*
-	* @param propertyname the propertyname
-	* @param groupId the group ID
-	* @param companyId the company ID
-	* @throws SystemException if a system exception occurred
-	*/
-	public static void removeByPropertynameGroupIdCompanyId(
-		java.lang.String propertyname, long groupId, long companyId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		getPersistence()
-			.removeByPropertynameGroupIdCompanyId(propertyname, groupId,
-			companyId);
-	}
-
-	/**
-	* Removes all the configurations where propertyname = &#63; from the database.
-	*
-	* @param propertyname the propertyname
-	* @throws SystemException if a system exception occurred
-	*/
-	public static void removeByPropertyname(java.lang.String propertyname)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		getPersistence().removeByPropertyname(propertyname);
-	}
-
-	/**
 	* Removes all the configurations from the database.
 	*
 	* @throws SystemException if a system exception occurred
@@ -586,35 +615,6 @@ public class ConfigurationUtil {
 	public static void removeAll()
 		throws com.liferay.portal.kernel.exception.SystemException {
 		getPersistence().removeAll();
-	}
-
-	/**
-	* Returns the number of configurations where propertyname = &#63; and groupId = &#63; and companyId = &#63;.
-	*
-	* @param propertyname the propertyname
-	* @param groupId the group ID
-	* @param companyId the company ID
-	* @return the number of matching configurations
-	* @throws SystemException if a system exception occurred
-	*/
-	public static int countByPropertynameGroupIdCompanyId(
-		java.lang.String propertyname, long groupId, long companyId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence()
-				   .countByPropertynameGroupIdCompanyId(propertyname, groupId,
-			companyId);
-	}
-
-	/**
-	* Returns the number of configurations where propertyname = &#63;.
-	*
-	* @param propertyname the propertyname
-	* @return the number of matching configurations
-	* @throws SystemException if a system exception occurred
-	*/
-	public static int countByPropertyname(java.lang.String propertyname)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().countByPropertyname(propertyname);
 	}
 
 	/**
@@ -641,7 +641,7 @@ public class ConfigurationUtil {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated As of 6.2.0
 	 */
 	public void setPersistence(ConfigurationPersistence persistence) {
 	}

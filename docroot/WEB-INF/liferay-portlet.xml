@@ -1,21 +1,20 @@
 <?xml version="1.0"?>
-<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.1.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_1_0.dtd">
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.2.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_2_0.dtd">
 
 <liferay-portlet-app>
 	<portlet>
-		<portlet-name>google-analytics</portlet-name>
+		<portlet-name>liferayGoogleAnalytics</portlet-name>
 		<icon>/google-analytics-icon.png</icon>
 		<instanceable>false</instanceable>
+		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 		<header-portlet-css>/js/jquery-validation-1.9.0/demo/css/screen.css</header-portlet-css>
-		<header-portlet-css>/js/bootstrap/css/bootstrap.css</header-portlet-css>
-        <header-portlet-css>/js/bootstrap/css/bootstrap-responsive.css</header-portlet-css>
         <header-portlet-css>/js/jquery-loadmask/jquery.loadmask.css</header-portlet-css>
         <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>        
         <header-portlet-css>/js/google_analytics/analytics_dashboard.css</header-portlet-css>
         <header-portlet-css>/js/rangeDatePicker/css/datepicker/base.css</header-portlet-css>
         <header-portlet-css>/js/rangeDatePicker/css/datepicker/clean.css</header-portlet-css>
 		<header-portlet-css>/css/main.css</header-portlet-css>
-		
+
 		<header-portlet-javascript>/js/jquery/jquery-1.7.1.min.js</header-portlet-javascript>
 		<header-portlet-javascript>/js/bootstrap/js/bootstrap.js</header-portlet-javascript>
         <header-portlet-javascript>/js/jquery-loadmask/jquery.loadmask.min.js</header-portlet-javascript>        
@@ -40,9 +39,8 @@
 		<control-panel-entry-category>content</control-panel-entry-category>            
         <control-panel-entry-weight>1</control-panel-entry-weight>
 		<instanceable>false</instanceable>
+		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 		<header-portlet-css>/js/jquery-validation-1.9.0/demo/css/screen.css</header-portlet-css>
-		<header-portlet-css>/js/bootstrap/css/bootstrap.css</header-portlet-css>
-        <header-portlet-css>/js/bootstrap/css/bootstrap-responsive.css</header-portlet-css>
         <header-portlet-css>/js/jquery-loadmask/jquery.loadmask.css</header-portlet-css>
         <header-portlet-css>/js/fancyapps-fancyBox/source/jquery.fancybox.css</header-portlet-css>        
         <header-portlet-css>/js/google_analytics/analytics_dashboard.css</header-portlet-css>

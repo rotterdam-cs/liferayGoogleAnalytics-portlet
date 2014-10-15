@@ -44,7 +44,7 @@
 .hidden-desktop {
   display: none; }
 
-@media (max-width:767px) {
+@media (max-width: 767px) {
   .visible-phone {
     display: block; }
 
@@ -56,7 +56,7 @@
 
   .visible-desktop {
     display: none; } }
-@media (min-width:768px) and (max-width:979px) {
+@media (min-width: 768px) and (max-width: 979px) {
   .visible-tablet {
     display: block; }
 
@@ -68,7 +68,7 @@
 
   .visible-desktop {
     display: none; } }
-@media (max-width:480px) {
+@media (max-width: 480px) {
   .nav-collapse {
     -webkit-transform: translate3d(0, 0, 0); }
 
@@ -112,7 +112,7 @@
 
   .carousel-caption {
     position: static; } }
-@media (max-width:767px) {
+@media (max-width: 767px) {
   body {
     padding-left: 20px;
     padding-right: 20px; }
@@ -150,7 +150,7 @@
 
   .input-prepend input[class*="span"], .input-append input[class*="span"] {
     width: auto; } }
-@media (min-width:768px) and (max-width:979px) {
+@media (min-width: 768px) and (max-width: 979px) {
   .row {
     margin-left: -20px;
     *zoom: 1; }
@@ -333,7 +333,7 @@
 
   input.span1, textarea.span1, .uneditable-input.span1 {
     width: 32px; } }
-@media (max-width:979px) {
+@media (max-width: 979px) {
   body {
     padding-top: 0; }
 
@@ -435,11 +435,11 @@
   .nav-collapse {
     overflow: hidden;
     height: 0; } }
-@media (min-width:980px) {
+@media (min-width: 980px) {
   .nav-collapse.collapse {
     height: auto !important;
     overflow: visible !important; } }
-@media (min-width:1200px) {
+@media (min-width: 1200px) {
   .row {
     margin-left: -30px;
     *zoom: 1; }

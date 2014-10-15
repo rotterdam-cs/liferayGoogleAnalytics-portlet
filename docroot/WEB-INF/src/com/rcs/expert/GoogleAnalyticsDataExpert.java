@@ -61,7 +61,7 @@ import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
 public class GoogleAnalyticsDataExpert {
 	private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsDataExpert.class);
 	
-	private Credential sessionCredential;
+	private static Credential sessionCredential;
 	private HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	private JsonFactory JSON_FACTORY = new JacksonFactory();
 		

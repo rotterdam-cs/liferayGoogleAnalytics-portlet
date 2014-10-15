@@ -1,5 +1,5 @@
 img.png {
-  background-image: expression(this.runtimeStyle.backgroundImage = "none",         this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')",         this.src = "images/blank.gif"     ); }
+  background-image: expression(this.runtimeStyle.backgroundImage = "none", this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')", this.src = "images/blank.gif" ); }
 
 .hidden {
   display: none; }

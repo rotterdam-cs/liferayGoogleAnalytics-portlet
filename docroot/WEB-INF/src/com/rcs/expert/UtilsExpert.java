@@ -3,6 +3,9 @@ package com.rcs.expert;
 import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -15,6 +18,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 @Component
 public class UtilsExpert {
+
 	private static final Log log = LogFactoryUtil.getLog(UtilsExpert.class);
 
 	/**
@@ -23,10 +27,18 @@ public class UtilsExpert {
 	 * @return
 	 */
 	public PortalInstanceIdentifier getPortalInstanceIdentifier(PortletRequest request) {
-		ThemeDisplay themeDisplay= (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);		
+		ThemeDisplay themeDisplay= (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		if(request.getAttribute(WebKeys.USER_ID) == null) {
+			return null;
+		}
 		long liferayUserId = (Long) request.getAttribute(WebKeys.USER_ID);
 		long groupId = themeDisplay.getScopeGroupId();		
 		return getPortalInstanceIdentifierByParameters(groupId, liferayUserId);
+	}
+	
+	public boolean isUserSignedIn(PortletRequest request) {
+		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		return themeDisplay.isSignedIn();
 	}
 	
 	/**

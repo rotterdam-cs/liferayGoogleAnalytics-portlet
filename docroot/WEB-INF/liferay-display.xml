@@ -3,6 +3,6 @@
 
 <display>
 	<category name="category.tools">
-		<portlet id="google-analytics" />		
+		<portlet id="liferayGoogleAnalytics" />		
 	</category>
 </display>

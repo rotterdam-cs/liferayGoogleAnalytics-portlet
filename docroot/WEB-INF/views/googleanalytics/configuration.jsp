@@ -17,7 +17,7 @@
 <portlet:resourceURL var="getGoogleAnalyticsDataURL" id="getGoogleAnalyticsData" />
 
 
-<div class="modal hide fade" id="<portlet:namespace/>helpWindow">
+<div class="modal fade" id="<portlet:namespace/>helpWindow" style="display: none;">
     <div class="modal-header">
         <a class="close" data-dismiss="modal">x</a>
         <h3><i class="icon-question-sign"></i> <fmt:message key="com.rcs.admin.help.center"/> - <fmt:message key="com.rcs.admin.configuration"/> <span style="float: right;"></span></h3>
@@ -176,8 +176,9 @@
 	}
 	
     jQuery(function() {
+    	var googleAnalyticsAccountsJSON;
     	<c:if test="${googleAnalyticsAccountsJSON != null && googleAnalyticsAccountsJSON != ''}" >
-    	   var googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
+    	   googleAnalyticsAccountsJSON = ${googleAnalyticsAccountsJSON};
     	   queryAccountsConfiguration(googleAnalyticsAccountsJSON);      	       	   
     	</c:if>
     	
@@ -216,8 +217,8 @@
 	            	            	jQuery("#<portlet:namespace/>authorize-button").show();
 	                        		jQuery("#<portlet:namespace/>save-configuration").hide();
 	                        		jQuery("#<portlet:namespace/>detailedconfigurationform").hide();
-	            	            } else {	            	            	
-	            	            	var googleAnalyticsAccountsJSON = jQuery.parseJSON(response[2]);
+	            	            } else {	
+	            	            	googleAnalyticsAccountsJSON = jQuery.parseJSON(response[2]);
 	            	            	queryAccountsConfiguration(googleAnalyticsAccountsJSON);
 	            	            	jQuery("#<portlet:namespace/>authorize-button").hide();
 		                    		jQuery("#<portlet:namespace/>save-configuration").show();
@@ -251,22 +252,26 @@
         jQuery(document).on("keypress", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false); 
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();   
+            jQuery("#<portlet:namespace/>client_id").val(jQuery.trim(jQuery("#<portlet:namespace/>client_id").val()));
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_id", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>client_id").val(jQuery.trim(jQuery("#<portlet:namespace/>client_id").val()));
         });
         jQuery(document).on("keypress", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();
+            jQuery("#<portlet:namespace/>client_secret").val(jQuery.trim(jQuery("#<portlet:namespace/>client_secret").val()));
         });
         jQuery(document).on("change", "#<portlet:namespace/>client_secret", function() {
             jQuery("#<portlet:namespace/>save-configuration").attr("disabled", false);
             jQuery("#<portlet:namespace/>save-configuration").show();
-            jQuery("#<portlet:namespace/>authorize-button").hide();            
+            jQuery("#<portlet:namespace/>authorize-button").hide();    
+            jQuery("#<portlet:namespace/>client_secret").val(jQuery.trim(jQuery("#<portlet:namespace/>client_secret").val()));
         });
         
         <%--//Form Options for Save Button --%>

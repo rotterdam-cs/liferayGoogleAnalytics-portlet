@@ -85,7 +85,7 @@
    padding: 0;
   }
   .modal{
-   width: 760px; 
+   width: 760px!important;
   }
 
 /* Orange cell color for selected days for compare date range */
@@ -102,7 +102,7 @@
 .center-table #visitsPieTxt {
 	margin-right: 60px;
 }
-.center-table .separator {
+.center-table .separator_report {
 	padding-left: 120px;
 }
 .pieTitle{
