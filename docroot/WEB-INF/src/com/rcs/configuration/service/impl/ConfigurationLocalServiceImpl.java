@@ -54,6 +54,7 @@ public class ConfigurationLocalServiceImpl
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	public Configuration addConfiguration(long userId, long groupId, String propertyname, String propertyvalue) throws PortalException, SystemException {
 	    User user = UserUtil.findByPrimaryKey(userId);
 	    

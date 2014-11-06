@@ -13,9 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.http.NoHttpResponseException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -861,41 +863,6 @@ public class GoogleAnalyticsDataExpert {
 		return response;
 	}
 	
-	/**
-	 * @param configurationDTO
-	 * @param authorizationCode
-	 * @param redirect_url
-	 * @return
-	 * @throws Exception
-	 */
-	private Analytics initializeAnalytics(
-			 ConfigurationDTO configurationDTO			
-			,String redirect_url
-			,PortalInstanceIdentifier pII
-	) throws TokenResponseException, Exception {		
-		Analytics response = null;
-		Credential credential = null;
-		
-		if (sessionCredential == null) {
-			log.info("first getCredential");
-			credential = getCredential(configurationDTO, pII);			
-		} else {
-			log.info("sesson credential");
-			credential = sessionCredential;
-		}
-		
-		if (credential != null) {			
-			response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);			
-			if (response == null) {
-				log.info("second getCredential");
-				credential = getCredential(configurationDTO, pII);
-				response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);
-				log.info("RESPONSE NULL");
-			}
-		}
-		return response;
-	}
-	
 	private Analytics initializeAnalytics(String accessToken) throws Exception {		
 		Analytics response = null;
 		Credential credential = null;
@@ -932,6 +899,7 @@ public class GoogleAnalyticsDataExpert {
 	 * @param JSON_FACTORY
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	private Analytics getAnalytics(Credential credential, HttpTransport HTTP_TRANSPORT, JsonFactory JSON_FACTORY) throws Exception {
 		Analytics analytics = null;
 		try{
@@ -945,54 +913,6 @@ public class GoogleAnalyticsDataExpert {
 			throw e;
 		}		
 		return analytics;
-	}
-	
-	/**
-	 * Get Credential and update session and stored credential
-	 * @param configurationDTO
-	 * @param authorizationCode
-	 * @param redirect_url
-	 * @param pII
-	 * @return
-	 * @throws Exception
-	 */
-	private Credential getCredential(
-			 ConfigurationDTO configurationDTO
-			,String authorizationCode
-			,String redirect_url
-			,PortalInstanceIdentifier pII
-	) throws TokenResponseException {
-		Credential credential = null;
-		try {
-			credential = googleTokenExpert.getToken(
-				 configurationDTO.getClient_id()
-				,configurationDTO.getClient_secret()
-				,configurationDTO.getRefreshtoken()
-				,authorizationCode
-				,redirect_url
-			);
-		} catch (TokenResponseException e) {			
-			throw e;
-		} catch (Exception e) {
-			log.info("Not Valid credential generated");
-		}
-		
-		//Update session credential
-		sessionCredential = credential;
-		
-		if (credential != null) {
-	    	//Store Credentials
-	    	String retrievedAccessToken = credential.getAccessToken();
-	    	if (retrievedAccessToken != null && !retrievedAccessToken.isEmpty()) {
-	    		configurationExpert.updateConfiguration(pII, GoogleAnalyticsConfigurationEnum.TOKEN.getKey(), retrievedAccessToken);
-	    	}	    	
-	    	String retrievedRefreshoken = credential.getRefreshToken();
-	    	if (retrievedRefreshoken != null && !retrievedRefreshoken.isEmpty()) {
-	    		configurationExpert.updateConfiguration(pII, GoogleAnalyticsConfigurationEnum.REFRESHTOKEN.getKey(), retrievedRefreshoken);
-	    	}
-		}
-		
-		return credential;
 	}
 	
 	/**
