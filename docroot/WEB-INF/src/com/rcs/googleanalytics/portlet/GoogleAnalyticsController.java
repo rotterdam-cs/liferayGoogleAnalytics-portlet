@@ -1,21 +1,16 @@
 package com.rcs.googleanalytics.portlet;
 
-import static com.rcs.common.Constants.ADMIN_SECTION_CONFIGURATION;
-import static com.rcs.common.Constants.ADMIN_SECTION_VIEW_REPORTS;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,23 +26,16 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.util.PortalUtil;
-import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
-import com.rcs.common.ServiceActionResult;
 import com.rcs.dto.ConfigurationDTO;
 import com.rcs.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.dto.LiferayGoogleAnalyticsDTO;
-import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.enums.MessagesEnum;
 import com.rcs.expert.ConfigurationExpert;
 import com.rcs.expert.GoogleAnalyticsDataExpert;
 import com.rcs.expert.GoogleTokenExpert;
 import com.rcs.expert.UtilsExpert;
-import com.rcs.configuration.model.Configuration;
-import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
-import com.rcs.configuration.service.persistence.ConfigurationUtil;
 
 /**
  * @author Prj.M@x <pablo.rendon@rotterdam-cs.com>

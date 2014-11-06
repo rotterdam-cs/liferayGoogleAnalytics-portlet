@@ -13,8 +13,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 @Component
 public class UtilsExpert {

@@ -1,13 +1,10 @@
 package com.rcs.common;
 
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * Class made specially for transporting responses from the service layer. <br
@@ -18,7 +15,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  */
 public class ServiceActionResult<T> implements Serializable {
 
-    private static Log logger = LogFactoryUtil.getLog(ServiceActionResult.class);
     private static final long serialVersionUID = 1L;
     private final boolean success;
     private final T payload;

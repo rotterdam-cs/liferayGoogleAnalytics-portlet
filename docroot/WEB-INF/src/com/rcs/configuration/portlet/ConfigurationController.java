@@ -14,13 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,6 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.gson.Gson;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -42,6 +42,8 @@ import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
 import com.rcs.common.ServiceActionResult;
+import com.rcs.configuration.model.Configuration;
+import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
 import com.rcs.dto.ConfigurationDTO;
 import com.rcs.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.dto.LiferayGoogleAnalyticsDTO;
@@ -51,9 +53,6 @@ import com.rcs.expert.ConfigurationExpert;
 import com.rcs.expert.GoogleAnalyticsDataExpert;
 import com.rcs.expert.GoogleTokenExpert;
 import com.rcs.expert.UtilsExpert;
-import com.rcs.configuration.model.Configuration;
-import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
-import com.rcs.configuration.service.persistence.ConfigurationUtil;
 
 /**
  * 
