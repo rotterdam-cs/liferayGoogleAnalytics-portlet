@@ -1,7 +1,8 @@
 target
-/.settings
+/.settings/
 /.project
 /.classpath
 /bin
 docroot/WEB-INF/classes/*
 /.tern-project
+
