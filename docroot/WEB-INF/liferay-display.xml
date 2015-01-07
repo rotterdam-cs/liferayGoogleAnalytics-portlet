@@ -6,6 +6,6 @@
 		<portlet id="liferayGoogleAnalytics" />		
 	</category>
 	<category name="category.hidden">
-	    <portlet id="ga-configuration"></portlet>
+	    <portlet id="ga-configuration" />
 	</category>	
 </display>
