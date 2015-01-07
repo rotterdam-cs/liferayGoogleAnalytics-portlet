@@ -2,6 +2,7 @@ package com.rcs.expert;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.springframework.stereotype.Component;
 
@@ -10,13 +11,11 @@ import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.analytics.AnalyticsScopes;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -38,8 +37,9 @@ public class GoogleTokenExpert {
 		String authorizeUrl = new GoogleAuthorizationCodeRequestUrl(
 				 CLENT_ID
 				,redirect_url
-				,scope)
+				,(Collection<String>) scope)
 		.setAccessType("offline")
+		////.setApprovalPrompt("force")////
 		.build();
 		return authorizeUrl;
 	}
@@ -81,7 +81,7 @@ public class GoogleTokenExpert {
                         mTransport,
                         mJsonFactory,
                         mSecrets,
-                        scope)
+                        (Collection<String>) scope)
         .build();
                 
         // try to refresh credentials based on the refresh token
@@ -106,11 +106,9 @@ public class GoogleTokenExpert {
     	    	}   	    	    	    
 	        } catch (IOException e) {
 	        	log.debug("IOException in GoogleTokenExpert in getToken");
-                e.printStackTrace();
                 throw e;
 	        } catch (Exception e) {
 	        	log.debug("Exception in GoogleTokenExpert in getToken");
-                e.printStackTrace();
                 throw e;
 	        }
         }         
@@ -124,14 +122,13 @@ public class GoogleTokenExpert {
 	                credential = flow.createAndStoreCredential(tokenResponse, null);	                	    	       
 	            } catch (TokenResponseException e) {                    
                     log.info("TokenResponseException in GoogleTokenExpert in getToken nr 2");
-                    e.printStackTrace();
                     throw e;
 	            } catch (Exception e) {
-                    e.printStackTrace();
+	            	log.info("Exception in GoogleTokenExpert in getToken nr 2");
                     throw e;
 	            }
         	} else {
-        		log.error("Invalid Authorization Code");
+        		log.info("Invalid Authorization Code");
         	}
         }
         return credential;

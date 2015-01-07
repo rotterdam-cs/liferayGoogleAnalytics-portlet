@@ -39,7 +39,7 @@ function getLocallizedKey(fkey) {
 			}			
 		});
 	}catch(e){
-		console.log("global variable 'messages' is not defined");
+		//console.log("global variable 'messages' is not defined");
 	}
 	return message;	       
 }

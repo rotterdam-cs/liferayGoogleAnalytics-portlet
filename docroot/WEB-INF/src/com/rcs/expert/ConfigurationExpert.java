@@ -1,31 +1,33 @@
 package com.rcs.expert;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.liferay.portal.NoSuchUserException;
-import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.persistence.UserUtil;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ServiceActionResult;
-import com.rcs.dto.ConfigurationDTO;
-import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.configuration.model.Configuration;
 import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
+import com.rcs.dto.ConfigurationDTO;
+import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
 
 /**
 * @author Prj.M@x <pablo.rendon@rotterdam-cs.com>
 */
 @Component
-public class ConfigurationExpert {
+public class ConfigurationExpert implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Log log = LogFactoryUtil.getLog(ConfigurationExpert.class); 
 	
 	/**
@@ -80,9 +82,9 @@ public class ConfigurationExpert {
 					entity = configuration.get(0);
 				}
 			} catch (PortalException e) {
-				log.error(e);
+				log.error(e.getMessage());
 			} catch (SystemException e) {
-				log.error(e);
+				log.error(e.getMessage());
 			}
 		}
 		return entity;
@@ -97,9 +99,9 @@ public class ConfigurationExpert {
 				entity = configuration.get(0);
 			}
 		} catch (PortalException e) {
-			log.error(e);
+			log.error(e.getMessage());
 		} catch (SystemException e) {
-			log.error(e);
+			log.error(e.getMessage());
 		}	
 		return entity;
 	}

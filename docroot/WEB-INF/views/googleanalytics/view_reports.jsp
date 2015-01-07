@@ -83,7 +83,7 @@
 		
 		<div class="clr"></div>
 						
-		<table border="0" class="center-table">
+		<table class="center-table">
 			<tr>
 				<td colspan="2" style="text-align:center;" class="pieTitle"><fmt:message key="com.rcs.googleanalytics.graphic.type.of.visitors"/></td>
 				<td><span class="separator_report"> </span></td>

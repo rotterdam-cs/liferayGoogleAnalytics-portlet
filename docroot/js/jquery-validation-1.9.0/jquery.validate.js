@@ -1162,11 +1162,12 @@ $.format = $.validator.format;
 				teardown:function() {
 					this.removeEventListener( original, handler, true );
 				},
-				handler: function(e) {
+				on: {
+				click: function(e) {
 					arguments[0] = $.event.fix(e);
 					arguments[0].type = fix;
 					return $.event.handle.apply(this, arguments);
-				}
+				}}
 			};
 			function handler(e) {
 				e = $.event.fix(e);

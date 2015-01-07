@@ -24,6 +24,11 @@ package com.rcs.configuration.model.impl;
  * @author rotterdamcs
  */
 public class ConfigurationImpl extends ConfigurationBaseImpl {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *

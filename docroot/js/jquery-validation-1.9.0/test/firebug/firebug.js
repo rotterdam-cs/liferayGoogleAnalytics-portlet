@@ -255,7 +255,7 @@ if (!("console" in window) || !("firebug" in console)) {
         {
         }
 
-        console.log(value);
+        //console.log(value);
     }
     
     function layout()

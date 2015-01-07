@@ -3935,7 +3935,7 @@ links.Network.Package.prototype._drawImage = function (ctx) {
     ctx.drawImage(this.imageObj, pos.x - width / 2, pos.y - height / 2, width, height);
   }
   else {
-    console.log("image still loading...");
+    //console.log("image still loading...");
   }
 }
 

@@ -2,10 +2,14 @@ package com.rcs.common;
 
 import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.persistence.UserUtil;
 
 public class PortalInstanceIdentifier {
+	
+	private static Log log = LogFactoryUtil.getLog(PortalInstanceIdentifier.class);
 	
 	private Long groupId = null;
 	private Long companyId = null;
@@ -41,9 +45,9 @@ public class PortalInstanceIdentifier {
 			User user = UserUtil.findByPrimaryKey(userId);
 			this.companyId = user.getCompanyId();
 		} catch (NoSuchUserException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (SystemException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	}
 	

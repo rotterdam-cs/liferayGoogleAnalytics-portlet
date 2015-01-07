@@ -13,6 +13,7 @@
 		<supports>
 			<mime-type>text/html</mime-type>
 		</supports>
+		<resource-bundle>Language</resource-bundle>
 		<portlet-info>
 			<title>Google Analytics</title>
 			<short-title>Google Analytics</short-title>
@@ -40,6 +41,7 @@
 			<mime-type>text/html</mime-type>
 			<portlet-mode>view</portlet-mode>
 		</supports>
+		<resource-bundle>Language</resource-bundle>		
 		<portlet-info>
 			<title>Google Analytics Configuration</title>
 			<short-title>NewPortlet</short-title>

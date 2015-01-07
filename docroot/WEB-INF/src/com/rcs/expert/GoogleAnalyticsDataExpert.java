@@ -1,9 +1,9 @@
 package com.rcs.expert;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import com.google.api.client.http.HttpResponse;
+
 import org.apache.http.NoHttpResponseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -26,7 +26,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.analytics.Analytics;
 import com.google.api.services.analytics.model.Account;
 import com.google.api.services.analytics.model.Accounts;
@@ -58,7 +58,12 @@ import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
  */
 @Component
 @Scope("session")
-public class GoogleAnalyticsDataExpert {
+public class GoogleAnalyticsDataExpert implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsDataExpert.class);
 	
 	private static Credential sessionCredential;
@@ -267,7 +272,7 @@ public class GoogleAnalyticsDataExpert {
 			throw e;
 		} catch (Exception e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.info(e.getMessage());
 		}
 		return liferayGoogleAnalyticsDTO;
 	}
@@ -409,7 +414,7 @@ public class GoogleAnalyticsDataExpert {
 			}			
 		} catch (Exception e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.info(e.getMessage());
 		}
 		return liferayGoogleAnalyticsDTO;
 	}
@@ -491,13 +496,13 @@ public class GoogleAnalyticsDataExpert {
 			killSessionCredential();
 			googleAnalyticsAccountDTO.setSuccess(false);
 			googleAnalyticsAccountDTO.appendMessage(e.getDetails().getMessage());
-		    log.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
+		    log.info("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
 		} catch (NoHttpResponseException e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (Exception e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		
 		return googleAnalyticsAccountDTO;
@@ -581,13 +586,13 @@ public class GoogleAnalyticsDataExpert {
 			killSessionCredential();
 			googleAnalyticsAccountDTO.setSuccess(false);
 			googleAnalyticsAccountDTO.appendMessage(e.getDetails().getMessage());
-		    log.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
+		    log.info("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());		  
 		} catch (NoHttpResponseException e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.error(e.getMessage());
 		} catch (Exception e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.error(e.getMessage());
 			throw e;
 		}
 		
@@ -675,17 +680,17 @@ public class GoogleAnalyticsDataExpert {
 		    	googleAnalyticsAccountDTO.appendMessage(message);
 		    	throw new Exception(message);
 		    } else {
-		    	log.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
+		    	log.info("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
 		    }
 		    googleAnalyticsAccountDTO.setMessage(e.getDetails().getMessage());
 		    throw e;
 		} catch (NoHttpResponseException e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.debug(e.getMessage());
 			throw e;
 		} catch (Exception e) {
 			killSessionCredential();
-			e.printStackTrace();
+			log.debug(e.getMessage());
 			throw e;
 		}
 		
@@ -858,7 +863,7 @@ public class GoogleAnalyticsDataExpert {
 				}
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.debug(e.getMessage());
 			throw e;
 		}
 		return response;
@@ -870,7 +875,7 @@ public class GoogleAnalyticsDataExpert {
 	 * @param redirect_url
 	 * @return
 	 * @throws Exception
-	 */
+	 *
 	private Analytics initializeAnalytics(
 			 ConfigurationDTO configurationDTO			
 			,String redirect_url
@@ -898,6 +903,7 @@ public class GoogleAnalyticsDataExpert {
 		}
 		return response;
 	}
+	*/
 	
 	private Analytics initializeAnalytics(String accessToken) throws Exception {		
 		Analytics response = null;
@@ -913,13 +919,6 @@ public class GoogleAnalyticsDataExpert {
 		
 		if (credential != null) {			
 			response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);
-			/* in case credential expired*/
-			/*if (response == null) {
-				log.error("second getCredential");
-				credential = getCredential(configurationDTO, authorizationCode, redirect_url, pII);
-				response = getAnalytics(credential, HTTP_TRANSPORT, JSON_FACTORY);
-				log.error("RESPONSE NULL");
-			}*/
 		}
 		return response;
 	}
@@ -936,17 +935,20 @@ public class GoogleAnalyticsDataExpert {
 	 * @return
 	 */
 	private Analytics getAnalytics(Credential credential, HttpTransport HTTP_TRANSPORT, JsonFactory JSON_FACTORY) throws Exception {
+
 		Analytics analytics = null;
 		try{
 			if (credential != null) {
-				analytics = Analytics.builder(HTTP_TRANSPORT, JSON_FACTORY)
-				.setApplicationName("Liferay-Google-Analytics")
-				.setHttpRequestInitializer(credential).build();				
+				
+			    // Set up and return Google Analytics API client.
+				analytics = new Analytics.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+			    .setApplicationName("Liferay-Google-Analytics").build();
+		
 			}
 		} catch (Exception e) {			
-			e.printStackTrace();
+			log.debug(e.getMessage());
 			throw e;
-		}		
+		}				
 		return analytics;
 	}
 	
@@ -958,7 +960,7 @@ public class GoogleAnalyticsDataExpert {
 	 * @param pII
 	 * @return
 	 * @throws Exception
-	 */
+	 *
 	private Credential getCredential(
 			 ConfigurationDTO configurationDTO
 			,String authorizationCode
@@ -997,6 +999,7 @@ public class GoogleAnalyticsDataExpert {
 		
 		return credential;
 	}
+	*/
 	
 	/**
 	 * Get Credential and update session and stored credential
@@ -1111,7 +1114,7 @@ public class GoogleAnalyticsDataExpert {
 			result = String.valueOf(datef.getTime());
 			return result;
 		} catch (ParseException e) {
-			log.error(e);
+			log.error(e.getMessage());
 			return null;
 		}		
 	}
@@ -1211,7 +1214,7 @@ public class GoogleAnalyticsDataExpert {
 				}
 			}        
         } catch (NumberFormatException ex) {  
-        	log.error(ex);
+        	log.error(ex.getMessage());
         }		
 		return maxValue;
 	}

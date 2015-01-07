@@ -15,7 +15,7 @@
 <portlet:resourceURL var="adminSectionsURL" id="adminSections" />
 <portlet:resourceURL var="getLocallizedKeyURL" id="getLocallizedKey" />
 
-<div class="container-fluid" sytle="width: 800px; height: 600px;">
+<div class="container-fluid" style="min-width: 800px; min-height: 600px;">
     <div class="row-fluid admin-mask" id="<portlet:namespace/>report-container-mask">
         <div class="span9">
             <%@include file="googleanalytics/top_messages.jsp" %>

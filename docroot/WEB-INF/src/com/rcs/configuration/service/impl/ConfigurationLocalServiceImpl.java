@@ -20,8 +20,6 @@ import java.util.List;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.persistence.UserUtil;
 import com.rcs.configuration.model.Configuration;
@@ -49,11 +47,12 @@ public class ConfigurationLocalServiceImpl
 	 *
 	 * Never reference this interface directly. Always use {@link com.rcs.configuration.service.ConfigurationLocalServiceUtil} to access the configuration local service.
 	 */
-	private static Log log = LogFactoryUtil.getLog(ConfigurationLocalServiceImpl.class);
+	//private static Log log = LogFactoryUtil.getLog(ConfigurationLocalServiceImpl.class);
 
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	public Configuration addConfiguration(long userId, long groupId, String propertyname, String propertyvalue) throws PortalException, SystemException {
 	    User user = UserUtil.findByPrimaryKey(userId);
 	    

@@ -4,6 +4,7 @@ import static com.rcs.common.Constants.ADMIN_SECTION_CONFIGURATION;
 import static com.rcs.common.Constants.ADMIN_SECTION_VIEW_REPORTS;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -14,13 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +30,6 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.gson.Gson;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -42,6 +43,8 @@ import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
 import com.rcs.common.ServiceActionResult;
+import com.rcs.configuration.model.Configuration;
+import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
 import com.rcs.dto.ConfigurationDTO;
 import com.rcs.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.dto.LiferayGoogleAnalyticsDTO;
@@ -51,9 +54,6 @@ import com.rcs.expert.ConfigurationExpert;
 import com.rcs.expert.GoogleAnalyticsDataExpert;
 import com.rcs.expert.GoogleTokenExpert;
 import com.rcs.expert.UtilsExpert;
-import com.rcs.configuration.model.Configuration;
-import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
-import com.rcs.configuration.service.persistence.ConfigurationUtil;
 
 /**
  * 
@@ -61,7 +61,12 @@ import com.rcs.configuration.service.persistence.ConfigurationUtil;
 @Controller
 @Scope("session")
 @RequestMapping("VIEW")
-public class ConfigurationController {
+public class ConfigurationController implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Log log = LogFactoryUtil.getLog(ConfigurationController.class);
 	
 	private ConfigurationDTO configurationDTO = new ConfigurationDTO();
@@ -114,84 +119,6 @@ public class ConfigurationController {
 	    String messagesJson = MessagesEnum.getMessagesDTO(locale);
 	    modelAttrs.put("messages", messagesJson);	    
 		return new ModelAndView("googleanalytics/view", modelAttrs);
-	}
-	
-	/**
-	 * @param modelAttrs
-	 * @param httpReq
-	 * @return
-	 */
-	private HashMap<String, Object> getGoogleAnalyticsAccountData(HashMap<String, Object> modelAttrs) {		
-		//Authorize Google API			   
-	    boolean isValidAccess = false;
-	    String message = null;
-	    try {
-	    	isValidAccess = googleAnalyticsDataExpert.isValidAccess(configurationDTO, pII);
-	    } catch(TokenResponseException e) {			
-	    	
-	    	if(e.getDetails() != null) {
-	    		if(e.getDetails().getError().equals("invalid_client")) {
-	    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);	    			
-	    		} else if(e.getDetails().getError().equals("invalid_grant")) { 
-	    			// If you contact Google for an OAuth2 token too quickly, 
-	    			// before the previous token expires,
-	    			// they will serve you that message.
-	    			//You have requested access too soon, you have to wait a couple of minutes to retry.
-	    			//com.rcs.googleanalytics.error.token.response.invalid.grant
-	    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response.invalid.grant", locale);
-	    		} else {
-	    			//general error
-	    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);	    			
-	    		}
-	    	}	    	
-	    	modelAttrs.put("errorMessage", message);	    
-	    } catch(Exception e) {
-	    	message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);
-	    	modelAttrs.put("errorMessage", message);
-	    }
-	    //If there are not access to google api, request authorization	  
-	    if (!isValidAccess) {
-	    	if (configurationDTO.getClient_id() != null && !configurationDTO.getClient_id().isEmpty()){	    		
-		    	String authURL = googleTokenExpert.getAuthURL(configurationDTO.getClient_id(), fullCurrentURL);		    	
-		    	modelAttrs.put("authURL", authURL);
-	    	}
-		//If there are access retrieve the Accounts DTO
-	    } else {	    	
-	    	GoogleAnalyticsAccountsDTO googleAnalyticsAccountsDTO = new GoogleAnalyticsAccountsDTO();
-	    	try {
-	    		googleAnalyticsAccountsDTO = googleAnalyticsDataExpert.getGoogleAnalyticsAccounts(configurationDTO, locale, pII);
-		    } catch(TokenResponseException e) {					    	
-		    	if(e.getDetails() != null) {
-		    		if(e.getDetails().getError().equals("invalid_client")) {
-		    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response", locale);	    			
-		    		} else if(e.getDetails().getError().equals("invalid_grant")) { 
-		    			// If you contact Google for an OAuth2 token too quickly, 
-		    			// before the previous token expires,
-		    			// they will serve you that message.
-		    			//You have requested access too soon, you have to wait a couple of minutes to retry.
-		    			//com.rcs.googleanalytics.error.token.response.invalid.grant
-		    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.googleanalytics.error.token.response.invalid.grant", locale);
-		    		} else {
-		    			//general error
-		    			message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);	    			
-		    		}
-		    	}		    	
-		    	modelAttrs.put("errorMessage", message);
-		    	return modelAttrs;
-		    } catch(Exception e) {
-		    	message = ResourceBundleHelper.getKeyLocalizedValue("com.rcs.general.error.processing.data", locale);
-		    	modelAttrs.put("errorMessage", message);
-		    }
-			if (googleAnalyticsAccountsDTO.isSuccess()){
-				modelAttrs.put("googleAnalyticsAccounts", googleAnalyticsAccountsDTO);
-				Gson gson = new Gson();
-		        String googleAnalyticsAccountsJSON = gson.toJson(googleAnalyticsAccountsDTO);
-		        modelAttrs.put("googleAnalyticsAccountsJSON", googleAnalyticsAccountsJSON);
-			} else {
-				modelAttrs.put("errorMessage", googleAnalyticsAccountsDTO.getMessage());
-			}			 
-		}
-	    return modelAttrs;		
 	}
 	
 	/**
@@ -295,8 +222,7 @@ public class ConfigurationController {
 			try {
 				ConfigurationLocalServiceUtil.deleteDetailedConfiguration();
 			} catch (SystemException ignored) { 
-				ignored.printStackTrace();
-				log.error("SystemException");
+				log.error("SystemException: " + ignored.getMessage());
 			}
 			if(StringUtils.isNotBlank(fullCurrentURL)) {
 				configurationOptions.put(GoogleAnalyticsConfigurationEnum.REDIRECT_URL.getKey(), fullCurrentURL);

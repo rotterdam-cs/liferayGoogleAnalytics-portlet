@@ -119,7 +119,7 @@
 	function queryAccountsConfiguration(googleAnalyticsAccountsJSON){
 		clearSelectOption("<portlet:namespace/>account_id");
 		jQuery("#<portlet:namespace/>save-detailed-configuration").addClass("hidden");
-		console.log(googleAnalyticsAccountsJSON);		
+
 		jQuery.each(googleAnalyticsAccountsJSON.accounts, function(index, value) {
             setSelectOption("<portlet:namespace/>account_id", value.value, value.html);
             if (value.selected == true) {
@@ -169,8 +169,6 @@
 	function handleAuthClick(event) {
 		if (authUrl!=""){
 			window.location=authUrl;
-		} else {
-			console.log("invalid Authorization URL");
 		}
 		return false;
 	}
@@ -211,7 +209,7 @@
 	            			url: "${getGoogleAnalyticsDataURL}"	            			
 	            			,success: function(data) {
 	            				var response = getResponseTextInfo(data);
-	            				console.log(response);
+
 	            				if (!response[0]) {
 	            	            	showError(response[1]);
 	            	            	jQuery("#<portlet:namespace/>authorize-button").show();

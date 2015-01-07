@@ -4,3 +4,4 @@ target
 /.classpath
 /bin
 docroot/WEB-INF/classes/*
+/.tern-project

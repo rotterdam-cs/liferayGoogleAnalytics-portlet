@@ -1,21 +1,17 @@
 package com.rcs.googleanalytics.portlet;
 
-import static com.rcs.common.Constants.ADMIN_SECTION_CONFIGURATION;
-import static com.rcs.common.Constants.ADMIN_SECTION_VIEW_REPORTS;
-import java.net.URL;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,31 +19,20 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.gson.Gson;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.util.PortalUtil;
-import com.rcs.common.LocalResponse;
 import com.rcs.common.PortalInstanceIdentifier;
 import com.rcs.common.ResourceBundleHelper;
-import com.rcs.common.ServiceActionResult;
 import com.rcs.dto.ConfigurationDTO;
-import com.rcs.dto.GoogleAnalyticsAccountsDTO;
 import com.rcs.dto.LiferayGoogleAnalyticsDTO;
-import com.rcs.enums.GoogleAnalyticsConfigurationEnum;
 import com.rcs.enums.MessagesEnum;
 import com.rcs.expert.ConfigurationExpert;
 import com.rcs.expert.GoogleAnalyticsDataExpert;
 import com.rcs.expert.GoogleTokenExpert;
 import com.rcs.expert.UtilsExpert;
-import com.rcs.configuration.model.Configuration;
-import com.rcs.configuration.service.ConfigurationLocalServiceUtil;
-import com.rcs.configuration.service.persistence.ConfigurationUtil;
 
 /**
  * @author Prj.M@x <pablo.rendon@rotterdam-cs.com>
@@ -55,9 +40,13 @@ import com.rcs.configuration.service.persistence.ConfigurationUtil;
 @Controller
 @Scope("session")
 @RequestMapping("VIEW")
-public class GoogleAnalyticsController {
-	private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsController.class);
+public class GoogleAnalyticsController implements Serializable {
+	//private static Log log = LogFactoryUtil.getLog(GoogleAnalyticsController.class);
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ConfigurationDTO configurationDTO = new ConfigurationDTO();
 	private Locale locale;
 	private PortalInstanceIdentifier pII;
@@ -84,7 +73,7 @@ public class GoogleAnalyticsController {
 		HashMap<String, Object> modelAttrs = new HashMap<String, Object>();
 		locale = LocaleUtil.fromLanguageId(LanguageUtil.getLanguageId(request));		
 		configurationDTO = configurationExpert.getConfiguration();
-		fullCurrentURL = configurationDTO.getRedirect_url();
+		setFullCurrentURL(configurationDTO.getRedirect_url());
 		pII = utilsExpert.getPortalInstanceIdentifier(request);
 	   
 		modelAttrs = googleAnalyticsDataExpert.getGoogleAnalyticsAccountData(configurationDTO, pII, locale, modelAttrs);		
@@ -99,7 +88,7 @@ public class GoogleAnalyticsController {
 	 * @param modelAttrs
 	 * @param httpReq
 	 * @return
-	 */
+	 *
 	private HashMap<String, Object> getGoogleAnalyticsAccountData(HashMap<String, Object> modelAttrs) throws TokenResponseException {		
 		//		//Authorize Google API			   
 	    boolean isValidAccess = false;
@@ -172,6 +161,7 @@ public class GoogleAnalyticsController {
 		}
 	    return modelAttrs;		
 	}
+	*/
 	
 	/**
 	 * Handle Ajax sections
@@ -247,6 +237,22 @@ public class GoogleAnalyticsController {
 
         response.getWriter().write(gad);
         return null;	
+	}
+
+	public GoogleTokenExpert getGoogleTokenExpert() {
+		return googleTokenExpert;
+	}
+
+	public void setGoogleTokenExpert(GoogleTokenExpert googleTokenExpert) {
+		this.googleTokenExpert = googleTokenExpert;
+	}
+
+	public String getFullCurrentURL() {
+		return fullCurrentURL;
+	}
+
+	public void setFullCurrentURL(String fullCurrentURL) {
+		this.fullCurrentURL = fullCurrentURL;
 	}
 	
 }
