@@ -7,14 +7,7 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
     
-    <!-- listener to let spring know about the web scopes -->
-    <listener>
-        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-    </listener>
-	<!-- added for Jboss -->
-	<listener>
-		<listener-class>com.liferay.portal.kernel.spring.context.PortletContextLoaderListener</listener-class>
-	</listener> 
+	<!-- to render spring mvc portlets -->
 	<servlet>
 		<servlet-name>ViewRendererServlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>
@@ -24,4 +17,13 @@
 		<servlet-name>ViewRendererServlet</servlet-name>
 		<url-pattern>/WEB-INF/servlet/view</url-pattern>
 	</servlet-mapping>
+
+    <!-- listener to let spring know about the web scopes -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+	<!-- added for Jboss -->
+	<listener>
+		<listener-class>com.liferay.portal.kernel.spring.context.PortletContextLoaderListener</listener-class>
+	</listener> 
 </web-app>

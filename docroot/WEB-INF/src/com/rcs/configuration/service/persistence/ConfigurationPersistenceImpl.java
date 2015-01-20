@@ -38,12 +38,14 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
+
 import com.rcs.configuration.NoSuchConfigurationException;
 import com.rcs.configuration.model.Configuration;
 import com.rcs.configuration.model.impl.ConfigurationImpl;
 import com.rcs.configuration.model.impl.ConfigurationModelImpl;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1883,7 +1885,7 @@ public class ConfigurationPersistenceImpl extends BasePersistenceImpl<Configurat
 				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static Log _log = LogFactoryUtil.getLog(ConfigurationPersistenceImpl.class);
 	private static Configuration _nullConfiguration = new ConfigurationImpl() {
-		/**
+			/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;

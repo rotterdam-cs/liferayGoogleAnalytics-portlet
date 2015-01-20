@@ -93,16 +93,12 @@ public class ConfigurationExpert implements Serializable {
 	public Configuration getConfigurationByPropertyName(String propertyname){
 		Configuration entity = null;
 		List<Configuration> configuration = new ArrayList<Configuration>();		
-		try {	
+		try {
 			configuration = ConfigurationLocalServiceUtil.getConfigurationByPropertyName(propertyname);//@@change this
 			if (!configuration.isEmpty()) {
 				entity = configuration.get(0);
 			}
-		} catch (PortalException e) {
-			log.error(e.getMessage());
-		} catch (SystemException e) {
-			log.error(e.getMessage());
-		}	
+		} catch (Exception e) {}	
 		return entity;
 	}
 		
