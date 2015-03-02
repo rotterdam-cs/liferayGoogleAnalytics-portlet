@@ -13,7 +13,7 @@
 <fmt:setBundle basename="Language"/>
 <portlet:defineObjects />
 
-<div class="taglib-header "> 
+<div class="taglib-header"> 
     <span class="header-back-to"> 
         <a data-toggle="modal" href="#<portlet:namespace/>helpWindow"><i class="icon-question-sign"></i></a> 
     </span> 

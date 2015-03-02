@@ -30,13 +30,13 @@
        </c:when>
        <c:otherwise>
 	       <li>
-	           <a href="#<%=Constants.ADMIN_SECTION_VIEW_REPORTS%>" data-toggle="tab" rel="admin-menu-analytics">
-	               <i class="icon-signal"></i><fmt:message key="com.rcs.admin.view.reports"/>                           
+	           <a href="#<%=Constants.ADMIN_SECTION_CONFIGURATION%>" data-toggle="tab" rel="admin-menu-configuration">
+	               <i class="icon-share"></i><fmt:message key="com.rcs.admin.configuration"/>                            
 	           </a>
 	       </li>
 	       <li>
-	           <a href="#<%=Constants.ADMIN_SECTION_CONFIGURATION%>" data-toggle="tab" rel="admin-menu-configuration">
-	               <i class="icon-share"></i><fmt:message key="com.rcs.admin.configuration"/>                            
+	           <a href="#<%=Constants.ADMIN_SECTION_VIEW_REPORTS%>" data-toggle="tab" rel="admin-menu-analytics">
+	               <i class="icon-signal"></i><fmt:message key="com.rcs.admin.view.reports"/>                           
 	           </a>
 	       </li>
        </c:otherwise>
